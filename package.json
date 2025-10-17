@@ -1,0 +1,32 @@
+{
+	"name": "@aarongustafson/form-show-if",
+	"version": "1.0.0",
+	"description": "Enables you to make one HTML form field show (or not) based on the value(s) of another field.",
+	"main": "form-show-if.js",
+	"module": "form-show-if.module.js",
+	"customElements": "custom-elements.json",
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/aarongustafson/form-show-if.git"
+	},
+	"author": "Aaron Gustafson <aaron@easy-designs.net> (https://www.aaron-gustafson.com/)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/aarongustafson/form-show-if/issues"
+	},
+	"homepage": "https://github.com/aarongustafson/form-show-if#readme",
+	"devDependencies": {
+		"prettier": "^3.6.2"
+	},
+	"keywords": [
+		"html",
+		"custom element",
+		"forms"
+	]
+}

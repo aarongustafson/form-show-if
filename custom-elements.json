@@ -1,0 +1,62 @@
+{
+	"schemaVersion": "2.1.0",
+	"readme": "README.md",
+	"modules": [
+		{
+			"kind": "javascript-module",
+			"path": "form-show-if.module.js",
+			"declarations": [
+				{
+					"kind": "class",
+					"customElement": true,
+					"name": "FormShowIfElement",
+					"tagName": "form-show-if",
+					"description": "Web component that enables you to make one HTML form field show (or not) based on the value(s) of another field.",
+					"members": [],
+					"attributes": [
+						{
+							"name": "conditions",
+							"description": "A double pipe (||) separated list of `name`/`value` pairs that, if true, would make this field show",
+							"type": {
+								"text": "string"
+							}
+						},
+						{
+							"name": "disabled-class",
+							"description": "An optional attribute declaring the `class` to use when the field is disabled. Used in lieu of the `hidden` attribute.",
+							"type": {
+								"text": "string"
+							}
+						},
+						{
+							"name": "enabled-class",
+							"description": "An optional attribute declaring the `class` to use when the field is enabled.",
+							"type": {
+								"text": "string"
+							}
+						}
+					],
+					"superclass": {
+						"name": "HTMLElement"
+					}
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "FormShowIfElement",
+					"declaration": {
+						"name": "FormShowIfElement"
+					}
+				},
+				{
+					"kind": "custom-element-definition",
+					"name": "form-show-if",
+					"declaration": {
+						"name": "FormShowIfElement"
+					}
+				}
+			]
+		}
+	]
+}

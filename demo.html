@@ -1,0 +1,262 @@
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Required Checkboxes Web Component Demo</title>
+		<style>
+			body {
+				margin: 1rem;
+			}
+			legend,
+			label {
+				font-weight: bold;
+				display: block;
+				margin-block: 1rem;
+			}
+			label:has(+ input) {
+				margin-block-end: 0;
+			}
+			fieldset {
+				margin-block: 1rem;
+				border: 0;
+				padding: 0;
+			}
+			legend {
+				margin-block: 0;
+			}
+			fieldset > label {
+				font-weight: normal;
+				margin-block: 0.25rem;
+				min-height: 23px;
+			}
+			input:not(
+				[type="checkbox"],
+				[type="radio"],
+				[type="submit"],
+				[type="reset"]
+			),
+			select,
+			textarea {
+				display: block;
+			}
+			small {
+				display: block;
+				font-style: italic;
+				font-weight: normal;
+				margin-block: 0.5rem 1rem;
+			}
+			.other-radio,
+			.other-checkbox {
+				display: flex;
+				margin-block: 0.25rem;
+				min-height: 23px;
+			}
+			.other-radio label,
+			.other-checkbox label {
+				font-weight: normal;
+				margin-block: 0;
+				margin-inline-end: 0.5rem;
+			}
+			.disabled label {
+				outline: 2px solid red;
+			}
+			.enabled label {
+				outline: 2px solid green;
+			}
+		</style>
+	</head>
+	<body>
+		<form action="#">
+			<label
+				>Email address
+				<input type="email" name="email" />
+			</label>
+
+			<form-show-if conditions="email=*">
+				<label for="dep1"
+					>Depends on email
+					<input
+						name="dep1"
+						id="dep1"
+						aria-describedby="dep1-description"
+					/>
+				</label>
+				<small id="dep1-description"
+					>This field will become required if the email field is
+					filled out</small
+				>
+			</form-show-if>
+
+			<label for="choose"
+				>Choose an option
+				<select name="choose" id="choose">
+					<option value="">Select an option</option>
+					<option value="1">Option 1</option>
+					<option value="2">Option 2</option>
+					<option value="3">Option 3</option>
+				</select>
+			</label>
+
+			<form-show-if conditions="email=*||choose=3">
+				<div>
+					<label for="dep2">Depends on email or select</label>
+					<input
+						name="dep2"
+						id="dep2"
+						aria-describedby="dep2-description"
+					/>
+					<small id="dep2-description"
+						>This field is shown if the email field is filled out or
+						if the <code>select</code> has Option 3 chosen.</small
+					>
+				</div>
+			</form-show-if>
+
+			<form-show-if
+				conditions="email=*"
+				disabled-class="disabled"
+				enabled-class="enabled"
+			>
+				<label for="dep3"
+					>Depends on email
+					<input
+						name="dep3"
+						id="dep3"
+						aria-describedby="dep3-description"
+					/>
+				</label>
+				<small id="dep3-description"
+					>This field is shown with a green border if the email field
+					is filled out. It’s got a red border if it should be
+					hidden.</small
+				>
+			</form-show-if>
+
+			<form-show-if conditions="email=foo@bar.tld">
+				<label for="dep4"
+					>Depends on email being "foo@bar.tld"
+					<input
+						name="dep4"
+						id="dep4"
+						aria-describedby="dep4-description"
+					/>
+				</label>
+				<small id="dep4-description"
+					>This field is shown if the email field is filled out
+					specifically with the text "foo@bar.tld"</small
+				>
+			</form-show-if>
+
+			<fieldset>
+				<legend>Choose an option</legend>
+				<label for="radio-1"
+					><input type="radio" name="radio" id="radio-1" value="1" />
+					Option 1</label
+				>
+				<label for="radio-2"
+					><input type="radio" name="radio" id="radio-2" value="2" />
+					Option 2</label
+				>
+				<label for="radio-3"
+					><input type="radio" name="radio" id="radio-3" value="3" />
+					Option 3</label
+				>
+				<div class="other-radio">
+					<label for="radio-other"
+						><input
+							type="radio"
+							name="radio"
+							id="radio-other"
+							value="other"
+						/>
+						Other</label
+					>
+					<form-show-if conditions="radio=other">
+						<label for="radio-other-val" class="dependent"
+							><span hidden>Other value</span>
+							<input name="radio-other" id="radio-other-val" />
+						</label>
+					</form-show-if>
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<legend>Choose an option</legend>
+				<label for="checkbox-1"
+					><input
+						type="checkbox"
+						name="checkbox[]"
+						id="checkbox-1"
+						value="1"
+					/>
+					Option 1</label
+				>
+				<label for="checkbox-2"
+					><input
+						type="checkbox"
+						name="checkbox[]"
+						id="checkbox-2"
+						value="2"
+					/>
+					Option 2</label
+				>
+				<label for="checkbox-3"
+					><input
+						type="checkbox"
+						name="checkbox[]"
+						id="checkbox-3"
+						value="3"
+					/>
+					Option 3</label
+				>
+				<div class="other-checkbox">
+					<label for="checkbox-other"
+						><input
+							type="checkbox"
+							name="checkbox[]"
+							id="checkbox-other"
+							value="other"
+						/>
+						Other</label
+					>
+					<form-show-if conditions="checkbox[]=other">
+						<label for="checkbox-other-val" class="dependent"
+							><span hidden>Other value</span>
+							<input
+								name="checkbox-other"
+								id="checkbox-other-val"
+							/>
+						</label>
+					</form-show-if>
+				</div>
+			</fieldset>
+
+			<form-show-if conditions="email=*">
+				<label for="variant-1">Shown if there’s an email value</label>
+				<input type="text" id="variant-1" name="variant-1" />
+				<small
+					>The only difference from previous examples is that the
+					<code>label</code> & <code>input</code> elements are not
+					nested.</small
+				>
+			</form-show-if>
+
+			<form-show-if conditions="email=*" disabled-class="disabled">
+				<label for="variant-5"
+					><span>Shown if</span>
+					<span>there’s an email value</span>
+					<input id="variant-5" name="variant-5" />
+				</label>
+				<small
+					>The only difference from previous example is that the label
+					now wraps the <code>input</code> as well. This instance has
+					a red outline when disabled.</small
+				>
+			</form-show-if>
+
+			<button type="submit">Submit</button>
+		</form>
+
+		<script src="form-show-if.js" async></script>
+	</body>
+</html>
