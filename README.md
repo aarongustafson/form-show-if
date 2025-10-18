@@ -14,10 +14,29 @@ Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes
 
 This web component assumes the fields you reference in `conditions` exist in the DOM when the component is loaded. If they don’t, they will be ignored.
 
-## Implementation notes
+## Markup changes
 
-1. **Field markup changes.** When the field is in its hidden state, the wrapper — the nearest mutual parent of the field & its label, or the `form-show-if` element itself — will be `hidden` and any fields within the wrapper will be `disabled`.
-1. If you provide `disabled-class` or `enabled-class` attributes, those classes will be applied to the wrapper when the field is disabled or enabled, respectively, instead of using the `hidden` attribute.
+The "wrapper" mentioned below refers to the nearest mutual parent of the field & its label. It may be the `form-show-if` element itself.
+
+If `disabled-class` and/or `enabled-class` **are not** defined:
+
+1. When **no** condition is met
+  * The wrapper has a `hidden` attribute
+  * All fields within the wrapper are disabled
+2. When **any** condition is met
+  * The `hidden` attribute is removed form the wrapper
+  * All fields within the wrapper are enabled
+
+If `disabled-class` and/or `enabled-class` **are** defined:
+
+1. When **no** condition is met
+  * If `enabled-class` is defined, the `enabled-class` is removed from the wrapper
+  * If `disabled-class` is defined, the `disabled-class` is added to the wrapper
+  * All fields within the wrapper are disabled
+2. When **any** condition is met
+  * If `enabled-class` is defined, the `enabled-class` is added to the wrapper
+  * If `disabled-class` is defined, the `disabled-class` is removed from the wrapper
+  * All fields within the wrapper are enabled
 
 ## Example
 
