@@ -20,20 +20,20 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 If `disabled-class` and/or `enabled-class` **are not** defined:
 
-1. When **no** condition is met
+* When **no** condition is met
   * The wrapper has a `hidden` attribute
   * All fields within the wrapper are disabled
-2. When **any** condition is met
+* When **any** condition is met
   * The `hidden` attribute is removed form the wrapper
   * All fields within the wrapper are enabled
 
 If `disabled-class` and/or `enabled-class` **are** defined:
 
-1. When **no** condition is met
+* When **no** condition is met
   * If `enabled-class` is defined, the `enabled-class` is removed from the wrapper
   * If `disabled-class` is defined, the `disabled-class` is added to the wrapper
   * All fields within the wrapper are disabled
-2. When **any** condition is met
+* When **any** condition is met
   * If `enabled-class` is defined, the `enabled-class` is added to the wrapper
   * If `disabled-class` is defined, the `disabled-class` is removed from the wrapper
   * All fields within the wrapper are enabled
