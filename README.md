@@ -1,4 +1,4 @@
-# Required If Web Component
+# Show If Web Component
 
 Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes you only want a field to show when certain other fields have a (particular) value. The `form-show-if` web component enables that.
 
