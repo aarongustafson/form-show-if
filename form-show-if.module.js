@@ -1,18 +1,21 @@
 export class FormShowIfElement extends HTMLElement {
 	connectedCallback() {
-		this.__$wrapper = this;
-		this.__$field = this.querySelector("input:not([type=submit],[type=reset],[type=image],[type=button]),select,textarea");
-    this.__$form = this.closest("form");
-    this.__$fields = [ this.__$field ];
+    // Ensures Light DOM is available
+    setTimeout(()=>{
+      this.__$wrapper = this;
+      this.__$field = this.querySelector("input:not([type=submit],[type=reset],[type=image],[type=button]),select,textarea");
+      this.__$form = this.closest("form");
+      this.__$fields = [ this.__$field ];
 
-    
-		this.__conditions = this.getAttribute("conditions").split("||");
-    
-    this.__is_shown = null;
-		this.__disabledClass = this.getAttribute("disabled-class");
-		this.__enabledClass = this.getAttribute("enabled-class");
+      
+      this.__conditions = this.getAttribute("conditions").split("||");
+      
+      this.__is_shown = null;
+      this.__disabledClass = this.getAttribute("disabled-class");
+      this.__enabledClass = this.getAttribute("enabled-class");
 
-		this.__init();
+      this.__init();
+    });
 	}
 
 	__addObservers() {
