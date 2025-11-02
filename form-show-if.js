@@ -1,5 +1,5 @@
 class FormShowIfElement extends HTMLElement {
-	connectedCallback() {
+  connectedCallback() {
     // Ensures Light DOM is available
     setTimeout(()=>{
       this.__$wrapper = this;
@@ -16,12 +16,19 @@ class FormShowIfElement extends HTMLElement {
 
       this.__init();
     });
-	}
+  }
 
-	__addObservers() {
-		this.__$form.addEventListener("change", this.__checkIfShouldShow.bind(this), false);
-		this.__$form.addEventListener("input", this.__checkIfShouldShow.bind(this), false);
-	}
+  __addObservers() {
+    const reset = () => {
+      setTimeout(
+        this.__checkIfShouldShow.bind(this),
+        100
+      );
+    };
+    this.__$form.addEventListener("reset", reset.bind(this), false);
+    this.__$form.addEventListener("change", this.__checkIfShouldShow.bind(this), false);
+    this.__$form.addEventListener("input", this.__checkIfShouldShow.bind(this), false);
+  }
 
   __determineWrapper() {
     let $wrapper = this.__$field.parentElement;
@@ -41,7 +48,6 @@ class FormShowIfElement extends HTMLElement {
 
   // Wrapper `class` Management
   __toggleEnabledClass() {
-    console.log("enabled class", this.__enabledClass, this.__is_shown);
     if ( ! this.__enabledClass ) { return; }
     if ( this.__is_shown ) {
       this.__$wrapper.classList.add( this.__enabledClass );
@@ -50,7 +56,6 @@ class FormShowIfElement extends HTMLElement {
     }
   }
   __toggleDisabledClass() {
-    console.log("disabled class", this.__disabledClass, this.__is_shown);
     if ( ! this.__disabledClass ) { return; }
     if ( ! this.__is_shown ) {
       this.__$wrapper.classList.add( this.__disabledClass );
@@ -64,106 +69,106 @@ class FormShowIfElement extends HTMLElement {
   }
 
   // Show / Hide Logic
-	__showField() {
+  __showField() {
     this.__is_shown = true;
     // Wrapper changes
     if ( ! this.__disabledClass ){
       this.__$wrapper.removeAttribute("hidden");
     }
-		this.__toggleClasses();
+    this.__toggleClasses();
     // Disable field submission
-		this.__$fields.forEach(($field) => {
+    this.__$fields.forEach(($field) => {
       $field.disabled = false;
     });
-	}
-	__hideField() {
+  }
+  __hideField() {
     this.__is_shown = false;
     // Wrapper changes
     if ( ! this.__disabledClass ){
       this.__$wrapper.hidden = true;
     }
     this.__toggleClasses();
-		// Enable field submission
-		this.__$fields.forEach(($field) => {
+    // Enable field submission
+    this.__$fields.forEach(($field) => {
       $field.disabled = true;
     });
-	}
+  }
 
-	__getCurrentValue( $field ) {
-		// Checkboxes are special
-		if ( $field.length &&
-				 $field[0].type &&
-				 $field[0].type == "checkbox" ) {
-			let value = [];
-			let length = $field.length;
-			while ( length-- ) {
-				let $current_field = $field[length];
-				if ( $current_field.checked ) {
-					value.push( $current_field.value );
-				}
-			}
-			value.reverse();
-			return value;
-		}
-		return $field.value;
-	}
+  __getCurrentValue( $field ) {
+    // Checkboxes are special
+    if ( $field.length &&
+         $field[0].type &&
+         $field[0].type == "checkbox" ) {
+      let value = [];
+      let length = $field.length;
+      while ( length-- ) {
+        let $current_field = $field[length];
+        if ( $current_field.checked ) {
+          value.push( $current_field.value );
+        }
+      }
+      value.reverse();
+      return value;
+    }
+    return $field.value;
+  }
 
-	__valuesMatch( condition_value, current_value ) {
-		let match = false;
-		
-		// precise match
-		if ( condition_value == current_value ) {
-			match = true;
-		} else
-		
-		// Anything
-		if ( condition_value == "*" && current_value != "" ) {
-			match = true;
-		} else
+  __valuesMatch( condition_value, current_value ) {
+    let match = false;
+    
+    // precise match
+    if ( condition_value == current_value ) {
+      match = true;
+    } else
+    
+    // Anything
+    if ( condition_value == "*" && current_value != "" ) {
+      match = true;
+    } else
 
-		// Checkboxes
-		if ( current_value instanceof Array && 
-				 current_value.includes( condition_value )
-		) {
-			match = true;
-		}
+    // Checkboxes
+    if ( current_value instanceof Array && 
+         current_value.includes( condition_value )
+    ) {
+      match = true;
+    }
 
-		return match;
-	}
-	
-	__checkIfShouldShow() {
+    return match;
+  }
+  
+  __checkIfShouldShow() {
     let should_show = false;
-		let test_conditions = this.__conditions;
-		test_conditions.some(condition => {
-			const [ name, value ] = condition.split("=");
-		
+    let test_conditions = this.__conditions;
+    test_conditions.some(condition => {
+      const [ name, value ] = condition.split("=");
+    
       const $field = this.__$form.elements[name];
-			if ( ! $field ) { return; }
+      if ( ! $field ) { return; }
     
       const current_value = this.__getCurrentValue( $field );
-			if ( this.__valuesMatch( value, current_value ) ) {
-		    should_show = true;
+      if ( this.__valuesMatch( value, current_value ) ) {
+        should_show = true;
         return true;
-			}
+      }
 
       return false;
-		});
+    });
     
     if ( should_show && this.__is_shown !== true ) {
       this.__showField();
-		} else if ( ! should_show && this.__is_shown !== false ) {
-			this.__hideField();
-		}
-	}
-	
-	__init() {
+    } else if ( ! should_show && this.__is_shown !== false ) {
+      this.__hideField();
+    }
+  }
+  
+  __init() {
     this.__determineWrapper();
     this.__gatherSiblingFields();
-		this.__addObservers();
-		this.__checkIfShouldShow();
-	}
+    this.__addObservers();
+    this.__checkIfShouldShow();
+  }
 }
 
 if( !!customElements ) {
-	customElements.define("form-show-if", FormShowIfElement);
+  customElements.define("form-show-if", FormShowIfElement);
 }
