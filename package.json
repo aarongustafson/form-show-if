@@ -1,6 +1,6 @@
 {
 	"name": "@aarongustafson/form-show-if",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Enables you to make one HTML form field show (or not) based on the value(s) of another field.",
 	"main": "form-show-if.js",
 	"module": "form-show-if.module.js",
