@@ -1,12 +1,12 @@
-import { beforeEach, afterEach } from 'vitest';
+import { beforeAll } from 'vitest';
 import { FormShowIfElement } from '../form-show-if.js';
 
-// Register the custom element
-if (!customElements.get('form-show-if')) {
-	customElements.define('form-show-if', FormShowIfElement);
-}
+// Define the custom element before tests run
+beforeAll(() => {
+	if (!customElements.get('form-show-if')) {
+		customElements.define('form-show-if', FormShowIfElement);
+	}
 
-// Clean up DOM between tests
-afterEach(() => {
-	document.body.innerHTML = '';
+	// Make the class available globally for testing static methods
+	globalThis.FormShowIfElement = FormShowIfElement;
 });
