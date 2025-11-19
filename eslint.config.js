@@ -10,4 +10,13 @@ export default [
 			'arrow-parens': ['error', 'always'],
 		},
 	},
+	{
+		files: ['**/*.test.js', 'test/**/*.js', 'vitest.config.js'],
+		rules: {
+			'import-x/no-extraneous-dependencies': [
+				'error',
+				{ devDependencies: true },
+			],
+		},
+	},
 ];
