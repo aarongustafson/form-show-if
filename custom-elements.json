@@ -4,7 +4,7 @@
 	"modules": [
 		{
 			"kind": "javascript-module",
-			"path": "form-show-if.module.js",
+			"path": "form-show-if.js",
 			"declarations": [
 				{
 					"kind": "class",
