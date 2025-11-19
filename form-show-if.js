@@ -117,12 +117,11 @@ export class FormShowIfElement extends HTMLElement {
 				return;
 			}
 
-			const current_value = this.__getCurrentValue($field);
-			if (this.__valuesMatch(value, current_value)) {
+			const current_value = FormShowIfElement.__getCurrentValue($field);
+			if (FormShowIfElement.__valuesMatch(value, current_value)) {
 				should_show = true;
 				return true;
 			}
-
 			return false;
 		});
 
