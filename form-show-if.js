@@ -106,6 +106,40 @@ export class FormShowIfElement extends HTMLElement {
 		});
 	}
 
+	__checkIfShouldShow() {
+		let should_show = false;
+		let test_conditions = this.__conditions;
+		test_conditions.some((condition) => {
+			const [name, value] = condition.split('=');
+
+			const $field = this.__$form.elements[name];
+			if (!$field) {
+				return;
+			}
+
+			const current_value = this.__getCurrentValue($field);
+			if (this.__valuesMatch(value, current_value)) {
+				should_show = true;
+				return true;
+			}
+
+			return false;
+		});
+
+		if (should_show && this.__is_shown !== true) {
+			this.__showField();
+		} else if (!should_show && this.__is_shown !== false) {
+			this.__hideField();
+		}
+	}
+
+	__init() {
+		this.__determineWrapper();
+		this.__gatherSiblingFields();
+		this.__addObservers();
+		this.__checkIfShouldShow();
+	}
+
 	static __getCurrentValue($field) {
 		// Checkboxes are special
 		if ($field.length && $field[0].type && $field[0].type == 'checkbox') {
@@ -142,42 +176,4 @@ export class FormShowIfElement extends HTMLElement {
 
 		return match;
 	}
-
-	__checkIfShouldShow() {
-		let should_show = false;
-		let test_conditions = this.__conditions;
-		test_conditions.some((condition) => {
-			const [name, value] = condition.split('=');
-
-			const $field = this.__$form.elements[name];
-			if (!$field) {
-				return;
-			}
-
-			const current_value = this.__getCurrentValue($field);
-			if (this.__valuesMatch(value, current_value)) {
-				should_show = true;
-				return true;
-			}
-
-			return false;
-		});
-
-		if (should_show && this.__is_shown !== true) {
-			this.__showField();
-		} else if (!should_show && this.__is_shown !== false) {
-			this.__hideField();
-		}
-	}
-
-	__init() {
-		this.__determineWrapper();
-		this.__gatherSiblingFields();
-		this.__addObservers();
-		this.__checkIfShouldShow();
-	}
-}
-
-if (!!customElements) {
-	customElements.define('form-show-if', FormShowIfElement);
 }
