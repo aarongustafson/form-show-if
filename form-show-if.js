@@ -1,4 +1,4 @@
-class FormShowIfElement extends HTMLElement {
+export class FormShowIfElement extends HTMLElement {
   connectedCallback() {
     // Ensures Light DOM is available
     setTimeout(()=>{
