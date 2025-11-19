@@ -1,0 +1,21 @@
+# Development files
+test/
+vitest.config.js
+eslint.config.js
+.prettierrc
+
+# Documentation that's not needed in the package
+demo.html
+
+# Git and CI files
+.git*
+.github/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+package-lock.json
