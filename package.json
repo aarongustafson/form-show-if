@@ -10,6 +10,9 @@
 		"access": "public"
 	},
 	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
 		"lint": "npm run lint:eslint && npm run lint:prettier",
 		"format": "npm run format:eslint && npm run format:prettier",
 		"lint:eslint": "eslint .",
@@ -29,9 +32,12 @@
 	"homepage": "https://github.com/aarongustafson/form-show-if#readme",
 	"devDependencies": {
 		"@open-wc/eslint-config": "^13.0.0",
+		"@vitest/coverage-v8": "^4.0.10",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
-		"prettier": "^3.6.2"
+		"happy-dom": "^20.0.10",
+		"prettier": "^3.6.2",
+		"vitest": "^4.0.10"
 	},
 	"keywords": [
 		"html",
