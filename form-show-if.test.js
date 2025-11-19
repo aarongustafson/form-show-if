@@ -1,14 +1,23 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { fireEvent, waitFor } from '@testing-library/dom';
+import userEvent from '@testing-library/user-event';
 import { FormShowIfElement } from './form-show-if.js';
 
 describe('FormShowIfElement', () => {
 	let container;
+	let user;
 
 	beforeEach(() => {
 		// Create a test container
 		container = document.createElement('div');
 		document.body.appendChild(container);
+		user = userEvent.setup();
 	});
+
+	const createForm = (formHTML) => {
+		container.innerHTML = `<form>${formHTML}</form>`;
+		return container.querySelector('form');
+	};
 
 	describe('Basic functionality', () => {
 		it('should be defined as a custom element', () => {
@@ -44,39 +53,36 @@ describe('FormShowIfElement', () => {
 		});
 
 		it('should show field when condition is met', async () => {
-			container.innerHTML = `
-				<form>
+			const form = createForm(`
+				<label>
+					<input type="radio" name="choice" value="yes"> Yes
+				</label>
+				<label>
+					<input type="radio" name="choice" value="no"> No
+				</label>
+				<form-show-if conditions="choice=yes">
 					<label>
-						<input type="radio" name="choice" value="yes"> Yes
+						Follow-up question
+						<input type="text" name="followup">
 					</label>
-					<label>
-						<input type="radio" name="choice" value="no"> No
-					</label>
-					<form-show-if conditions="choice=yes">
-						<label>
-							Follow-up question
-							<input type="text" name="followup">
-						</label>
-					</form-show-if>
-				</form>
-			`;
+				</form-show-if>
+			`);
 
-			const form = container.querySelector('form');
 			const yesRadio = form.querySelector('[name="choice"][value="yes"]');
-			const formShowIf = container.querySelector('form-show-if');
+			const formShowIf = form.querySelector('form-show-if');
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
 			// Wait for connectedCallback
 			await new Promise((resolve) => setTimeout(resolve, 150));
 
-			// Select "yes"
-			yesRadio.checked = true;
-			form.dispatchEvent(new Event('change', { bubbles: true }));
+			// Select "yes" using userEvent
+			await user.click(yesRadio);
+			fireEvent.change(yesRadio);
 
 			// Wait for event handling
-			await new Promise((resolve) => setTimeout(resolve, 50));
-
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 		});
 
 		it('should toggle visibility when condition changes', async () => {
