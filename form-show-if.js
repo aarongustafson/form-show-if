@@ -139,7 +139,7 @@ export class FormShowIfElement extends HTMLElement {
   __checkIfShouldShow() {
     let should_show = false;
     let test_conditions = this.__conditions;
-    test_conditions.some(condition => {
+    test_conditions.some((condition) => {
       const [ name, value ] = condition.split("=");
     
       const $field = this.__$form.elements[name];
