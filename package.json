@@ -1,17 +1,59 @@
 {
 	"name": "@aarongustafson/form-show-if",
 	"version": "1.1.0",
+	"description": "Web component that enables you to make one HTML form field show (or not) based on the value(s) of another field.",
+	"keywords": [
+		"html",
+		"custom element",
+		"web component",
+		"forms",
+		"form validation",
+		"conditional fields",
+		"show-hide",
+		"accessibility",
+		"a11y"
+	],
+	"author": "Aaron Gustafson <aaron@easy-designs.net> (https://www.aaron-gustafson.com/)",
+	"license": "MIT",
+	"homepage": "https://github.com/aarongustafson/form-show-if#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/aarongustafson/form-show-if.git"
+	},
+	"bugs": {
+		"url": "https://github.com/aarongustafson/form-show-if/issues"
+	},
 	"type": "module",
-	"description": "Enables you to make one HTML form field show (or not) based on the value(s) of another field.",
-	"main": "form-show-if.js",
-	"module": "form-show-if.module.js",
+	"main": "index.js",
+	"module": "form-show-if.js",
 	"customElements": "custom-elements.json",
-	"publishConfig": {
-		"access": "public"
+	"exports": {
+		".": {
+			"import": "./index.js"
+		},
+		"./form-show-if.js": {
+			"import": "./form-show-if.js"
+		},
+		"./define.js": {
+			"import": "./define.js"
+		},
+		"./custom-elements.json": "./custom-elements.json"
+	},
+	"files": [
+		"form-show-if.js",
+		"define.js",
+		"index.js",
+		"custom-elements.json",
+		"README.md",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=14.0.0"
 	},
 	"scripts": {
-		"test": "vitest run",
-		"test:watch": "vitest",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:run": "vitest run",
 		"test:coverage": "vitest run --coverage",
 		"lint": "npm run lint:eslint && npm run lint:prettier",
 		"format": "npm run format:eslint && npm run format:prettier",
@@ -20,28 +62,17 @@
 		"lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
 		"format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/aarongustafson/form-show-if.git"
-	},
-	"author": "Aaron Gustafson <aaron@easy-designs.net> (https://www.aaron-gustafson.com/)",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/aarongustafson/form-show-if/issues"
-	},
-	"homepage": "https://github.com/aarongustafson/form-show-if#readme",
 	"devDependencies": {
 		"@open-wc/eslint-config": "^13.0.0",
 		"@vitest/coverage-v8": "^4.0.10",
+		"@vitest/ui": "^4.0.10",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"happy-dom": "^20.0.10",
 		"prettier": "^3.6.2",
 		"vitest": "^4.0.10"
 	},
-	"keywords": [
-		"html",
-		"custom element",
-		"forms"
-	]
+	"publishConfig": {
+		"access": "public"
+	}
 }
