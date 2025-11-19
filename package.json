@@ -1,6 +1,7 @@
 {
 	"name": "@aarongustafson/form-show-if",
 	"version": "1.1.0",
+	"type": "module",
 	"description": "Enables you to make one HTML form field show (or not) based on the value(s) of another field.",
 	"main": "form-show-if.js",
 	"module": "form-show-if.module.js",
@@ -9,7 +10,12 @@
 		"access": "public"
 	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"lint": "npm run lint:eslint && npm run lint:prettier",
+		"format": "npm run format:eslint && npm run format:prettier",
+		"lint:eslint": "eslint .",
+		"format:eslint": "eslint . --fix",
+		"lint:prettier": "prettier \"**/*.js\" --check --ignore-path .gitignore",
+		"format:prettier": "prettier \"**/*.js\" --write --ignore-path .gitignore"
 	},
 	"repository": {
 		"type": "git",
@@ -22,6 +28,9 @@
 	},
 	"homepage": "https://github.com/aarongustafson/form-show-if#readme",
 	"devDependencies": {
+		"@open-wc/eslint-config": "^13.0.0",
+		"eslint": "^9.39.1",
+		"eslint-config-prettier": "^10.1.8",
 		"prettier": "^3.6.2"
 	},
 	"keywords": [
