@@ -141,7 +141,7 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 ## Demo
 
-[Live Demo](https://aarongustafson.github.io/form-show-if/demo.html) ([Source](./demo.html))
+[Live Demo](https://aarongustafson.github.io/form-show-if/demo/index.html) ([Source](./demo/index.html))
 
 ## Browser Support
 
