@@ -3,60 +3,8 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Required Checkboxes Web Component Demo</title>
+		<link rel="stylesheet" href="styles.css" />
 		<style>
-			body {
-				margin: 1rem;
-			}
-			legend,
-			label {
-				font-weight: bold;
-				display: block;
-				margin-block: 1rem;
-			}
-			label:has(+ input) {
-				margin-block-end: 0;
-			}
-			fieldset {
-				margin-block: 1rem;
-				border: 0;
-				padding: 0;
-			}
-			legend {
-				margin-block: 0;
-			}
-			fieldset > label {
-				font-weight: normal;
-				margin-block: 0.25rem;
-				min-height: 23px;
-			}
-			input:not(
-				[type="checkbox"],
-				[type="radio"],
-				[type="submit"],
-				[type="reset"]
-			),
-			select,
-			textarea {
-				display: block;
-			}
-			small {
-				display: block;
-				font-style: italic;
-				font-weight: normal;
-				margin-block: 0.5rem 1rem;
-			}
-			.other-radio,
-			.other-checkbox {
-				display: flex;
-				margin-block: 0.25rem;
-				min-height: 23px;
-			}
-			.other-radio label,
-			.other-checkbox label {
-				font-weight: normal;
-				margin-block: 0;
-				margin-inline-end: 0.5rem;
-			}
 			.disabled label {
 				outline: 2px solid red;
 			}
