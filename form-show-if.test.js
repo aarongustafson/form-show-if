@@ -412,6 +412,48 @@ describe('FormShowIfElement', () => {
 			expect(result).toEqual(['val1', 'val3']);
 		});
 
+		it('__getCurrentValue should handle single checkbox with value when checked', () => {
+			const checkbox = Object.assign(document.createElement('input'), {
+				type: 'checkbox',
+				value: 'agreed',
+				checked: true,
+			});
+
+			const result = FormShowIfElement.__getCurrentValue(checkbox);
+			expect(result).toBe('agreed');
+		});
+
+		it('__getCurrentValue should handle single checkbox with value when unchecked', () => {
+			const checkbox = Object.assign(document.createElement('input'), {
+				type: 'checkbox',
+				value: 'agreed',
+				checked: false,
+			});
+
+			const result = FormShowIfElement.__getCurrentValue(checkbox);
+			expect(result).toBe('');
+		});
+
+		it('__getCurrentValue should default to "on" for single checkbox without explicit value when checked', () => {
+			const checkbox = Object.assign(document.createElement('input'), {
+				type: 'checkbox',
+				checked: true,
+			});
+
+			const result = FormShowIfElement.__getCurrentValue(checkbox);
+			expect(result).toBe('on');
+		});
+
+		it('__getCurrentValue should return empty string for single checkbox without explicit value when unchecked', () => {
+			const checkbox = Object.assign(document.createElement('input'), {
+				type: 'checkbox',
+				checked: false,
+			});
+
+			const result = FormShowIfElement.__getCurrentValue(checkbox);
+			expect(result).toBe('');
+		});
+
 		it('__valuesMatch should match exact values', () => {
 			expect(FormShowIfElement.__valuesMatch('yes', 'yes')).toBe(true);
 			expect(FormShowIfElement.__valuesMatch('yes', 'no')).toBe(false);
