@@ -1,210 +1,895 @@
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Required Checkboxes Web Component Demo</title>
-		<link rel="stylesheet" href="styles.css" />
+		<title>&lt;form-show-if&gt; Web Component Demo</title>
+		<link rel="stylesheet" href="./styles.css" />
 		<style>
+			/* Demo-specific styles */
 			.disabled label {
-				outline: 2px solid red;
+				outline: 3px solid red;
+				outline-offset: 7px;
+				background: #f7d3d3;
 			}
 			.enabled label {
-				outline: 2px solid green;
+				outline: 3px solid green;
+				outline-offset: 7px;
+				background: #d3f7d3;
+			}
+			form-show-if:defined label.dependent {
+				display: none;
+			}
+			form-show-if:defined label.dependent:not([hidden]) {
+				display: block;
 			}
 		</style>
 	</head>
 	<body>
-		<form action="#">
-			<label
-				>Email address
-				<input type="email" name="email" />
-			</label>
+		<header>
+			<h1>&lt;form-show-if&gt;</h1>
+			<p>
+				A web component that conditionally shows or hides form fields
+				based on the values of other fields. See the
+				<a href="https://github.com/aarongustafson/form-show-if/blob/main/README.md">README</a> for installation and API
+				documentation.
+			</p>
+			<p>
+				<strong>Visual indicators:</strong> In these demos, fields with custom CSS classes show
+				green outlines/backgrounds when visible and red when hidden.
+			</p>
+		</header>
 
-			<form-show-if conditions="email=*">
-				<label for="dep1"
-					>Depends on email
-					<input
-						name="dep1"
-						id="dep1"
-						aria-describedby="dep1-description"
-					/>
-				</label>
-				<small id="dep1-description"
-					>This field will become required if the email field is
-					filled out</small
-				>
-			</form-show-if>
+		<main>
+			<!-- Basic Conditional Show/Hide -->
+			<section>
+				<h2>Basic Conditional Show/Hide</h2>
+				<p>
+					Simple conditions that show a field when another
+					field has any value.
+				</p>
 
-			<label for="choose"
-				>Choose an option
-				<select name="choose" id="choose">
-					<option value="">Select an option</option>
-					<option value="1">Option 1</option>
-					<option value="2">Option 2</option>
-					<option value="3">Option 3</option>
-				</select>
-			</label>
+				<div class="demo-section">
+					<h3>Show Field if Another Field Has Any Value</h3>
+					<p>
+						Using <code>conditions="email=*"</code> shows the field
+						when the email field contains any value.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;label&gt;Email address
+  &lt;input type="email" name="email" /&gt;
+&lt;/label&gt;
 
-			<form-show-if conditions="email=*||choose=3">
-				<div>
-					<label for="dep2">Depends on email or select</label>
-					<input
-						name="dep2"
-						id="dep2"
-						aria-describedby="dep2-description"
-					/>
-					<small id="dep2-description"
-						>This field is shown if the email field is filled out or
-						if the <code>select</code> has Option 3 chosen.</small
-					>
+<mark>&lt;form-show-if 
+  conditions="email=*"&gt;</mark>
+  &lt;label for="phone"&gt;Phone number
+    &lt;input 
+      name="phone" 
+      id="phone" 
+      type="tel" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email" />
+								</label>
+
+								<form-show-if
+									conditions="email=*"
+								>
+									<label for="phone"
+										>Phone number
+										<input
+											name="phone"
+											id="phone"
+											type="tel"
+										/>
+										<small
+											>This field appears when the
+											email field is filled out</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
 				</div>
-			</form-show-if>
+			</section>
 
-			<form-show-if
-				conditions="email=*"
-				disabled-class="disabled"
-				enabled-class="enabled"
-			>
-				<label for="dep3"
-					>Depends on email
-					<input
-						name="dep3"
-						id="dep3"
-						aria-describedby="dep3-description"
-					/>
-				</label>
-				<small id="dep3-description"
-					>This field is shown with a green border if the email field
-					is filled out. It’s got a red border if it should be
-					hidden.</small
-				>
-			</form-show-if>
+			<!-- OR Logic -->
+			<section>
+				<h2>OR Logic</h2>
+				<p>
+					Show a field when <em>any</em> of multiple
+					conditions are met using the <code>||</code> 
+					operator.
+				</p>
 
-			<form-show-if conditions="email=foo@bar.tld">
-				<label for="dep4"
-					>Depends on email being "foo@bar.tld"
-					<input
-						name="dep4"
-						id="dep4"
-						aria-describedby="dep4-description"
-					/>
-				</label>
-				<small id="dep4-description"
-					>This field is shown if the email field is filled out
-					specifically with the text "foo@bar.tld"</small
-				>
-			</form-show-if>
+				<div class="demo-section">
+					<h3>Multiple Conditions (OR)</h3>
+					<p>
+						Using <code>conditions="email=*||choose=3"</code> shows
+						the field when either the email field has a
+						value OR the select has "Option 3" chosen.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;label&gt;Email address
+  &lt;input type="email" name="email" /&gt;
+&lt;/label&gt;
 
-			<fieldset>
-				<legend>Choose an option</legend>
-				<label for="radio-1"
-					><input type="radio" name="radio" id="radio-1" value="1" />
-					Option 1</label
-				>
-				<label for="radio-2"
-					><input type="radio" name="radio" id="radio-2" value="2" />
-					Option 2</label
-				>
-				<label for="radio-3"
-					><input type="radio" name="radio" id="radio-3" value="3" />
-					Option 3</label
-				>
-				<div class="other-radio">
-					<label for="radio-other"
-						><input
-							type="radio"
-							name="radio"
-							id="radio-other"
-							value="other"
-						/>
-						Other</label
-					>
-					<form-show-if conditions="radio=other">
-						<label for="radio-other-val" class="dependent"
-							><span hidden>Other value</span>
-							<input name="radio-other" id="radio-other-val" />
-						</label>
-					</form-show-if>
+&lt;label for="choose"&gt;Choose an option
+  &lt;select name="choose" id="choose"&gt;
+    &lt;option value=""&gt;Select...&lt;/option&gt;
+    &lt;option value="1"&gt;Option 1&lt;/option&gt;
+    &lt;option value="2"&gt;Option 2&lt;/option&gt;
+    &lt;option value="3"&gt;Option 3&lt;/option&gt;
+  &lt;/select&gt;
+&lt;/label&gt;
+
+<mark>&lt;form-show-if 
+  conditions="email=*||choose=3"&gt;</mark>
+  &lt;label for="details"&gt;Details
+    &lt;input name="details" id="details" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email2" />
+								</label>
+
+								<label for="choose"
+									>Choose an option
+									<select name="choose" id="choose">
+										<option value="">Select...</option>
+										<option value="1">Option 1</option>
+										<option value="2">Option 2</option>
+										<option value="3">Option 3</option>
+									</select>
+								</label>
+
+								<form-show-if
+									conditions="email2=*||choose=3"
+								>
+									<label for="details"
+										>Details
+										<input name="details" id="details" />
+										<small
+											>Shown if email has a value OR
+											Option 3 is selected</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
 				</div>
-			</fieldset>
+			</section>
 
-			<fieldset>
-				<legend>Choose an option</legend>
-				<label for="checkbox-1"
-					><input
-						type="checkbox"
-						name="checkbox[]"
-						id="checkbox-1"
-						value="1"
-					/>
-					Option 1</label
-				>
-				<label for="checkbox-2"
-					><input
-						type="checkbox"
-						name="checkbox[]"
-						id="checkbox-2"
-						value="2"
-					/>
-					Option 2</label
-				>
-				<label for="checkbox-3"
-					><input
-						type="checkbox"
-						name="checkbox[]"
-						id="checkbox-3"
-						value="3"
-					/>
-					Option 3</label
-				>
-				<div class="other-checkbox">
-					<label for="checkbox-other"
-						><input
-							type="checkbox"
-							name="checkbox[]"
-							id="checkbox-other"
-							value="other"
-						/>
-						Other</label
-					>
-					<form-show-if conditions="checkbox[]=other">
-						<label for="checkbox-other-val" class="dependent"
-							><span hidden>Other value</span>
-							<input
-								name="checkbox-other"
-								id="checkbox-other-val"
-							/>
-						</label>
-					</form-show-if>
+			<!-- Specific Value Matching -->
+			<section>
+				<h2>Specific Value Matching</h2>
+				<p>
+					Show a field only when another field matches an exact
+					value.
+				</p>
+
+				<div class="demo-section">
+					<h3>Exact Value Match</h3>
+					<p>
+						Using <code>conditions="email=foo@bar.tld"</code> shows
+						the field only when the email field contains
+						that exact value.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;label&gt;Email address
+  &lt;input type="email" name="email" /&gt;
+&lt;/label&gt;
+
+<mark>&lt;form-show-if 
+  conditions="email=foo@bar.tld"&gt;</mark>
+  &lt;label for="secret"&gt;Secret code
+    &lt;input name="secret" id="secret" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email3" />
+								</label>
+
+								<form-show-if
+									conditions="email3=foo@bar.tld"
+								>
+									<label for="secret"
+										>Secret code
+										<input name="secret" id="secret" />
+										<small
+											>Try entering "foo@bar.tld" as the
+											email address</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
 				</div>
-			</fieldset>
+			</section>
 
-			<form-show-if conditions="email=*">
-				<label for="variant-1">Shown if there’s an email value</label>
-				<input type="text" id="variant-1" name="variant-1" />
-				<small
-					>The only difference from previous examples is that the
-					<code>label</code> & <code>input</code> elements are not
-					nested.</small
-				>
-			</form-show-if>
+			<!-- Radio & Checkbox Integration -->
+			<section>
+				<h2>Radio & Checkbox Integration</h2>
+				<p>
+					Common pattern for "Other" options in radio and checkbox
+					groups.
+				</p>
 
-			<form-show-if conditions="email=*" disabled-class="disabled">
-				<label for="variant-5"
-					><span>Shown if</span>
-					<span>there’s an email value</span>
-					<input id="variant-5" name="variant-5" />
-				</label>
-				<small
-					>The only difference from previous example is that the label
-					now wraps the <code>input</code> as well. This instance has
-					a red outline when disabled.</small
-				>
-			</form-show-if>
+				<div class="demo-section">
+					<h3>Radio "Other" Pattern</h3>
+					<p>
+						When a user selects "Other", a text field appears
+						for them to specify.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Choose an option&lt;/legend&gt;
+  &lt;label&gt;
+    &lt;input type="radio" 
+      name="radio" value="1" /&gt;
+    Option 1
+  &lt;/label&gt;
+  &lt;label&gt;
+    &lt;input type="radio" 
+      name="radio" value="2" /&gt;
+    Option 2
+  &lt;/label&gt;
+  &lt;div class="other-radio"&gt;
+    &lt;label&gt;
+      &lt;input type="radio" 
+        name="radio" value="other" /&gt;
+      Other
+    &lt;/label&gt;
+    <mark>&lt;form-show-if 
+      conditions="radio=other"&gt;</mark>
+      &lt;label class="dependent"&gt;
+        &lt;span class="visibly-hidden"&gt;Other value&lt;/span&gt;
+        &lt;input name="radio-other" /&gt;
+      &lt;/label&gt;
+    <mark>&lt;/form-show-if&gt;</mark>
+  &lt;/div&gt;
+&lt;/fieldset&gt;</code></pre>
+						<div class="demo">
+							<form action="#">
+								<fieldset>
+									<legend>Choose an option</legend>
+									<label
+										><input
+											type="radio"
+											name="radio"
+											value="1"
+										/>
+										Option 1</label
+									>
+									<label
+										><input
+											type="radio"
+											name="radio"
+											value="2"
+										/>
+										Option 2</label
+									>
+									<div class="other-radio">
+										<label
+											><input
+												type="radio"
+												name="radio"
+												value="other"
+											/>
+											Other</label
+										>
+										<form-show-if
+											conditions="radio=other"
+										>
+											<label class="dependent"
+												><span class="visibly-hidden"
+													>Other value</span
+												>
+												<input name="radio-other" />
+											</label>
+										</form-show-if>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+					</div>
+				</div>
 
-			<button type="submit">Submit</button>
-		</form>
+				<div class="demo-section">
+					<h3>Checkbox "Other" Pattern</h3>
+					<p>
+						Similar to radio, but works with checkbox arrays using
+						<code>checkbox[]=other</code> syntax.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;fieldset&gt;
+  &lt;legend&gt;Choose options&lt;/legend&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" 
+      name="checkbox[]" value="1" /&gt;
+    Option 1
+  &lt;/label&gt;
+  &lt;label&gt;
+    &lt;input type="checkbox" 
+      name="checkbox[]" value="2" /&gt;
+    Option 2
+  &lt;/label&gt;
+  &lt;div class="other-checkbox"&gt;
+    &lt;label&gt;
+      &lt;input type="checkbox" 
+        name="checkbox[]" 
+        value="other" /&gt;
+      Other
+    &lt;/label&gt;
+    <mark>&lt;form-show-if 
+      conditions="checkbox[]=other"&gt;</mark>
+      &lt;label class="dependent"&gt;
+        &lt;span class="visibly-hidden"&gt;Other value&lt;/span&gt;
+        &lt;input name="checkbox-other" /&gt;
+      &lt;/label&gt;
+    <mark>&lt;/form-show-if&gt;</mark>
+  &lt;/div&gt;
+&lt;/fieldset&gt;</code></pre>
+						<div class="demo">
+							<form action="#">
+								<fieldset>
+									<legend>Choose options</legend>
+									<label
+										><input
+											type="checkbox"
+											name="checkbox[]"
+											value="1"
+										/>
+										Option 1</label
+									>
+									<label
+										><input
+											type="checkbox"
+											name="checkbox[]"
+											value="2"
+										/>
+										Option 2</label
+									>
+									<div class="other-checkbox">
+										<label
+											><input
+												type="checkbox"
+												name="checkbox[]"
+												value="other"
+											/>
+											Other</label
+										>
+										<form-show-if
+											conditions="checkbox[]=other"
+										>
+											<label class="dependent"
+												><span class="visibly-hidden"
+													>Other value</span
+												>
+												<input name="checkbox-other" />
+											</label>
+										</form-show-if>
+									</div>
+								</fieldset>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
 
-		<script src="define.js" type="module"></script>
+			<!-- Custom CSS Classes -->
+			<section>
+				<h2>Custom CSS Classes</h2>
+				<p>
+					Customize the appearance of shown and hidden fields using CSS classes
+					instead of the <code>hidden</code> attribute.
+				</p>
+
+				<div class="demo-section">
+					<h3>Enabled Class</h3>
+					<p>
+						The <code>enabled-class</code> attribute adds a CSS class when the field
+						should be visible, like <code>enabled-class="enabled"</code>.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*" 
+  enabled-class="enabled"&gt;</mark>
+  &lt;label for="company"&gt;Company
+    &lt;input name="company" id="company" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email4" />
+								</label>
+								<form-show-if
+									conditions="email4=*"
+									enabled-class="enabled"
+								>
+									<label for="company"
+										>Company
+										<input name="company" id="company" />
+										<small
+											>Gets a green outline when shown</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section">
+					<h3>Disabled Class</h3>
+					<p>
+						The <code>disabled-class</code> attribute adds a CSS class when the field
+						should be hidden, like <code>disabled-class="disabled"</code>.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*"
+  disabled-class="disabled"&gt;</mark>
+  &lt;label for="department"&gt;Department
+    &lt;input 
+      name="department" 
+      id="department" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email5" />
+								</label>
+								<form-show-if
+									conditions="email5=*"
+									disabled-class="disabled"
+								>
+									<label for="department"
+										>Department
+										<input
+											name="department"
+											id="department"
+										/>
+										<small
+											>Gets a red outline when hidden</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section">
+					<h3>Both Classes</h3>
+					<p>
+						Combine both classes for complete visual control over shown and hidden states.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*"
+  enabled-class="enabled"
+  disabled-class="disabled"&gt;</mark>
+  &lt;label for="notes"&gt;Notes
+    &lt;textarea 
+      name="notes" 
+      id="notes"&gt;&lt;/textarea&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email6" />
+								</label>
+								<form-show-if
+									conditions="email6=*"
+									enabled-class="enabled"
+									disabled-class="disabled"
+								>
+									<label for="notes"
+										>Notes
+										<textarea
+											name="notes"
+											id="notes"
+											rows="3"
+										></textarea>
+										<small
+											>Green when shown, red when hidden</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Label Structure Variations -->
+			<section>
+				<h2>Label Structure Variations</h2>
+				<p>
+					The component works with different <code>label</code> /
+					<code>input</code> markup patterns.
+				</p>
+
+				<div class="demo-section">
+					<h3>Sibling Label & Input</h3>
+					<p>
+						<code>label</code> and <code>input</code> as siblings
+						instead of the <code>input</code> being nested in the
+						<code>label</code>.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*"&gt;</mark>
+  &lt;label for="field1"&gt;
+    Field label
+  &lt;/label&gt;
+  &lt;input 
+    type="text" 
+    id="field1" 
+    name="field1" /&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email7" />
+								</label>
+								<form-show-if
+									conditions="email7=*"
+								>
+									<label for="field1">Field label</label>
+									<input
+										type="text"
+										id="field1"
+										name="field1"
+									/>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section">
+					<h3>Label with Nested Elements</h3>
+					<p>
+						Works with labels containing one or more nested
+						elements.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*"&gt;</mark>
+  &lt;label for="field2"&gt;
+    &lt;span&gt;Multi-part&lt;/span&gt;
+    &lt;span&gt;label text&lt;/span&gt;
+  &lt;/label&gt;
+  &lt;input id="field2" name="field2" /&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email8" />
+								</label>
+								<form-show-if
+									conditions="email8=*"
+								>
+									<label for="field2"
+										><span>Multi-part</span>
+										<span>label text</span></label
+									>
+									<input id="field2" name="field2" />
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="demo-section">
+					<h3>Label Wrapping Input</h3>
+					<p>Label can wrap the <code>input</code> element.</p>
+					<div class="code-demo-pair">
+						<pre><code><mark>&lt;form-show-if 
+  conditions="email=*"&gt;</mark>
+  &lt;label&gt;
+    &lt;span&gt;Wrapped input&lt;/span&gt;
+    &lt;input name="field3" /&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Email address
+									<input type="email" name="email9" />
+								</label>
+								<form-show-if
+									conditions="email9=*"
+								>
+									<label
+										><span>Wrapped input</span>
+										<input name="field3" />
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Complex Examples -->
+			<section>
+				<h2>Complex Examples</h2>
+				<p>More advanced use cases combining multiple techniques.</p>
+
+				<div class="demo-section">
+					<h3>Chained Dependencies</h3>
+					<p>
+						Field A shows Field B, and Field B shows Field
+						C.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;label&gt;Enable feature
+  &lt;input 
+    type="checkbox" 
+    name="enable" 
+    value="yes" /&gt;
+&lt;/label&gt;
+
+<mark>&lt;form-show-if 
+  conditions="enable=yes"&gt;</mark>
+  &lt;label for="feature-type"&gt;
+    Feature type
+    &lt;select 
+      name="feature-type" 
+      id="feature-type"&gt;
+      &lt;option value=""&gt;Select...&lt;/option&gt;
+      &lt;option value="basic"&gt;Basic&lt;/option&gt;
+      &lt;option value="advanced"&gt;
+        Advanced
+      &lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark>
+
+<mark>&lt;form-show-if 
+  conditions="feature-type=advanced"&gt;</mark>
+  &lt;label for="config"&gt;
+    Advanced config
+    &lt;textarea 
+      name="config" 
+      id="config"&gt;&lt;/textarea&gt;
+  &lt;/label&gt;
+<mark>&lt;/form-show-if&gt;</mark></code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Enable feature
+									<input
+										type="checkbox"
+										name="enable"
+										value="yes"
+									/>
+								</label>
+
+								<form-show-if conditions="enable=yes">
+									<label for="feature-type"
+										>Feature type
+										<select
+											name="feature-type"
+											id="feature-type"
+										>
+											<option value="">Select...</option>
+											<option value="basic">Basic</option>
+											<option value="advanced">
+												Advanced
+											</option>
+										</select>
+										<small
+											>Shown when feature is
+											enabled</small
+										>
+									</label>
+								</form-show-if>
+
+								<form-show-if
+									conditions="feature-type=advanced"
+								>
+									<label for="config"
+										>Advanced configuration
+										<textarea
+											name="config"
+											id="config"
+											rows="3"
+										></textarea>
+										<small
+											>Shown when "Advanced" is
+											selected</small
+										>
+									</label>
+								</form-show-if>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- Real-World Example -->
+			<section>
+				<h2>Real-World Example</h2>
+				<p>A complete contact form demonstrating practical usage.</p>
+
+				<div class="demo-section">
+					<h3>Contact Form with Conditional Fields</h3>
+					<p>
+						This form collects contact preferences and conditionally
+						shows contact detail fields.
+					</p>
+					<div class="code-demo-pair">
+						<pre><code>&lt;form action="#"&gt;
+  &lt;label&gt;Name
+    &lt;input type="text" 
+      name="name" required /&gt;
+  &lt;/label&gt;
+
+  &lt;fieldset&gt;
+    &lt;legend&gt;
+      How should we contact you?
+    &lt;/legend&gt;
+    &lt;label&gt;
+      &lt;input type="checkbox" 
+        name="contact[]" 
+        value="email" /&gt;
+      Email
+    &lt;/label&gt;
+    &lt;label&gt;
+      &lt;input type="checkbox" 
+        name="contact[]" 
+        value="phone" /&gt;
+      Phone
+    &lt;/label&gt;
+  &lt;/fieldset&gt;
+
+  <mark>&lt;form-show-if 
+    conditions="contact[]=email"&gt;</mark>
+    &lt;label for="contact-email"&gt;
+      Email address
+      &lt;input type="email" 
+        name="contact-email" 
+        id="contact-email" /&gt;
+    &lt;/label&gt;
+  <mark>&lt;/form-show-if&gt;</mark>
+
+  <mark>&lt;form-show-if 
+    conditions="contact[]=phone"&gt;</mark>
+    &lt;label for="contact-phone"&gt;
+      Phone number
+      &lt;input type="tel" 
+        name="contact-phone" 
+        id="contact-phone" /&gt;
+    &lt;/label&gt;
+  <mark>&lt;/form-show-if&gt;</mark>
+
+  &lt;label for="message"&gt;Message
+    &lt;textarea name="message" 
+      id="message" 
+      required&gt;&lt;/textarea&gt;
+  &lt;/label&gt;
+
+  &lt;button type="submit"&gt;
+    Send
+  &lt;/button&gt;
+&lt;/form&gt;</code></pre>
+						<div class="demo">
+							<form action="#">
+								<label
+									>Name
+									<input type="text" name="name" required />
+								</label>
+
+								<fieldset>
+									<legend>How should we contact you?</legend>
+									<label
+										><input
+											type="checkbox"
+											name="contact[]"
+											value="email"
+										/>
+										Email</label
+									>
+									<label
+										><input
+											type="checkbox"
+											name="contact[]"
+											value="phone"
+										/>
+										Phone</label
+									>
+								</fieldset>
+
+								<form-show-if conditions="contact[]=email">
+									<label for="contact-email"
+										>Email address
+										<input
+											type="email"
+											name="contact-email"
+											id="contact-email"
+										/>
+									</label>
+								</form-show-if>
+
+								<form-show-if conditions="contact[]=phone">
+									<label for="contact-phone"
+										>Phone number
+										<input
+											type="tel"
+											name="contact-phone"
+											id="contact-phone"
+										/>
+									</label>
+								</form-show-if>
+
+								<label for="message"
+									>Message
+									<textarea
+										name="message"
+										id="message"
+										required
+										rows="4"
+									></textarea>
+								</label>
+
+								<button type="submit">Send</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- API Reference -->
+			<section class="api-reference">
+				<h2>API Reference</h2>
+				<p>
+					For complete documentation of attributes, behavior, and
+					browser support, see the
+					<a href="https://github.com/aarongustafson/form-show-if/blob/main/README.md">README</a>.
+				</p>
+			</section>
+		</main>
+
+		<footer>
+			<h2>Browser Support & Notes</h2>
+			<p>
+				This web component uses modern browser APIs and works in all
+				evergreen browsers. It requires JavaScript to be enabled and
+				uses the Custom Elements API.
+			</p>
+			<p>
+				The component enhances standard HTML forms by controlling field visibility
+				and automatically disables hidden fields so they don't submit with the form.
+				Fields are hidden using the <code>hidden</code> attribute unless custom CSS
+				classes are specified.
+			</p>
+		</footer>
+
+		<script src="../define.js" type="module"></script>
 	</body>
 </html>
