@@ -31,12 +31,16 @@
 			<p>
 				A web component that conditionally shows or hides form fields
 				based on the values of other fields. See the
-				<a href="https://github.com/aarongustafson/form-show-if/blob/main/README.md">README</a> for installation and API
-				documentation.
+				<a
+					href="https://github.com/aarongustafson/form-show-if/blob/main/README.md"
+					>README</a
+				>
+				for installation and API documentation.
 			</p>
 			<p>
-				<strong>Visual indicators:</strong> In these demos, fields with custom CSS classes show
-				green outlines/backgrounds when visible and red when hidden.
+				<strong>Visual indicators:</strong> In these demos, fields with
+				custom CSS classes show green outlines/backgrounds when visible
+				and red when hidden.
 			</p>
 		</header>
 
@@ -45,8 +49,8 @@
 			<section>
 				<h2>Basic Conditional Show/Hide</h2>
 				<p>
-					Simple conditions that show a field when another
-					field has any value.
+					Simple conditions that show a field when another field has
+					any value.
 				</p>
 
 				<div class="demo-section">
@@ -76,9 +80,7 @@
 									<input type="email" name="email" />
 								</label>
 
-								<form-show-if
-									conditions="email=*"
-								>
+								<form-show-if conditions="email=*">
 									<label for="phone"
 										>Phone number
 										<input
@@ -87,8 +89,8 @@
 											type="tel"
 										/>
 										<small
-											>This field appears when the
-											email field is filled out</small
+											>This field appears when the email
+											field is filled out</small
 										>
 									</label>
 								</form-show-if>
@@ -102,8 +104,8 @@
 			<section>
 				<h2>OR Logic</h2>
 				<p>
-					Show a field when <em>any</em> of multiple
-					conditions are met using the <code>||</code> 
+					Show a field when <em>any</em> of multiple conditions are
+					met using the <code>||</code>
 					operator.
 				</p>
 
@@ -111,8 +113,8 @@
 					<h3>Multiple Conditions (OR)</h3>
 					<p>
 						Using <code>conditions="email=*||choose=3"</code> shows
-						the field when either the email field has a
-						value OR the select has "Option 3" chosen.
+						the field when either the email field has a value OR the
+						select has "Option 3" chosen.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;label&gt;Email address
@@ -151,9 +153,7 @@
 									</select>
 								</label>
 
-								<form-show-if
-									conditions="email2=*||choose=3"
-								>
+								<form-show-if conditions="email2=*||choose=3">
 									<label for="details"
 										>Details
 										<input name="details" id="details" />
@@ -173,16 +173,15 @@
 			<section>
 				<h2>Specific Value Matching</h2>
 				<p>
-					Show a field only when another field matches an exact
-					value.
+					Show a field only when another field matches an exact value.
 				</p>
 
 				<div class="demo-section">
 					<h3>Exact Value Match</h3>
 					<p>
 						Using <code>conditions="email=foo@bar.tld"</code> shows
-						the field only when the email field contains
-						that exact value.
+						the field only when the email field contains that exact
+						value.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;label&gt;Email address
@@ -202,9 +201,7 @@
 									<input type="email" name="email3" />
 								</label>
 
-								<form-show-if
-									conditions="email3=foo@bar.tld"
-								>
+								<form-show-if conditions="email3=foo@bar.tld">
 									<label for="secret"
 										>Secret code
 										<input name="secret" id="secret" />
@@ -231,8 +228,8 @@
 				<div class="demo-section">
 					<h3>Radio "Other" Pattern</h3>
 					<p>
-						When a user selects "Other", a text field appears
-						for them to specify.
+						When a user selects "Other", a text field appears for
+						them to specify.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;fieldset&gt;
@@ -291,9 +288,7 @@
 											/>
 											Other</label
 										>
-										<form-show-if
-											conditions="radio=other"
-										>
+										<form-show-if conditions="radio=other">
 											<label class="dependent"
 												><span class="visibly-hidden"
 													>Other value</span
@@ -394,15 +389,16 @@
 			<section>
 				<h2>Custom CSS Classes</h2>
 				<p>
-					Customize the appearance of shown and hidden fields using CSS classes
-					instead of the <code>hidden</code> attribute.
+					Customize the appearance of shown and hidden fields using
+					CSS classes instead of the <code>hidden</code> attribute.
 				</p>
 
 				<div class="demo-section">
 					<h3>Enabled Class</h3>
 					<p>
-						The <code>enabled-class</code> attribute adds a CSS class when the field
-						should be visible, like <code>enabled-class="enabled"</code>.
+						The <code>enabled-class</code> attribute adds a CSS
+						class when the field should be visible, like
+						<code>enabled-class="enabled"</code>.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-show-if 
@@ -426,7 +422,8 @@
 										>Company
 										<input name="company" id="company" />
 										<small
-											>Gets a green outline when shown</small
+											>Gets a green outline when
+											shown</small
 										>
 									</label>
 								</form-show-if>
@@ -438,8 +435,9 @@
 				<div class="demo-section">
 					<h3>Disabled Class</h3>
 					<p>
-						The <code>disabled-class</code> attribute adds a CSS class when the field
-						should be hidden, like <code>disabled-class="disabled"</code>.
+						The <code>disabled-class</code> attribute adds a CSS
+						class when the field should be hidden, like
+						<code>disabled-class="disabled"</code>.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-show-if 
@@ -468,7 +466,8 @@
 											id="department"
 										/>
 										<small
-											>Gets a red outline when hidden</small
+											>Gets a red outline when
+											hidden</small
 										>
 									</label>
 								</form-show-if>
@@ -480,7 +479,8 @@
 				<div class="demo-section">
 					<h3>Both Classes</h3>
 					<p>
-						Combine both classes for complete visual control over shown and hidden states.
+						Combine both classes for complete visual control over
+						shown and hidden states.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-show-if 
@@ -512,7 +512,8 @@
 											rows="3"
 										></textarea>
 										<small
-											>Green when shown, red when hidden</small
+											>Green when shown, red when
+											hidden</small
 										>
 									</label>
 								</form-show-if>
@@ -554,9 +555,7 @@
 									>Email address
 									<input type="email" name="email7" />
 								</label>
-								<form-show-if
-									conditions="email7=*"
-								>
+								<form-show-if conditions="email7=*">
 									<label for="field1">Field label</label>
 									<input
 										type="text"
@@ -590,9 +589,7 @@
 									>Email address
 									<input type="email" name="email8" />
 								</label>
-								<form-show-if
-									conditions="email8=*"
-								>
+								<form-show-if conditions="email8=*">
 									<label for="field2"
 										><span>Multi-part</span>
 										<span>label text</span></label
@@ -621,9 +618,7 @@
 									>Email address
 									<input type="email" name="email9" />
 								</label>
-								<form-show-if
-									conditions="email9=*"
-								>
+								<form-show-if conditions="email9=*">
 									<label
 										><span>Wrapped input</span>
 										<input name="field3" />
@@ -642,10 +637,7 @@
 
 				<div class="demo-section">
 					<h3>Chained Dependencies</h3>
-					<p>
-						Field A shows Field B, and Field B shows Field
-						C.
-					</p>
+					<p>Field A shows Field B, and Field B shows Field C.</p>
 					<div class="code-demo-pair">
 						<pre><code>&lt;label&gt;Enable feature
   &lt;input 
@@ -870,23 +862,22 @@
 				<p>
 					For complete documentation of attributes, behavior, and
 					browser support, see the
-					<a href="https://github.com/aarongustafson/form-show-if/blob/main/README.md">README</a>.
+					<a
+						href="https://github.com/aarongustafson/form-show-if/blob/main/README.md"
+						>README</a
+					>.
 				</p>
 			</section>
 		</main>
 
 		<footer>
-			<h2>Browser Support & Notes</h2>
 			<p>
-				This web component uses modern browser APIs and works in all
-				evergreen browsers. It requires JavaScript to be enabled and
-				uses the Custom Elements API.
-			</p>
-			<p>
-				The component enhances standard HTML forms by controlling field visibility
-				and automatically disables hidden fields so they don't submit with the form.
-				Fields are hidden using the <code>hidden</code> attribute unless custom CSS
-				classes are specified.
+				Made with ❤️ by
+				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
+				View the source on
+				<a href="https://github.com/aarongustafson/form-show-if"
+					>GitHub</a
+				>.
 			</p>
 		</footer>
 
