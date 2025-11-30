@@ -1,6 +1,12 @@
 # Show If Web Component
 
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-show-if.svg)](https://www.npmjs.com/package/@aarongustafson/form-show-if) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-show-if/ci.yml?branch=main)](https://github.com/aarongustafson/form-show-if/actions)
+
 Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes you only want a field to show when certain other fields have a (particular) value. The `form-show-if` web component enables that.
+
+## Demo
+
+[Live Demo](https://aarongustafson.github.io/form-show-if/demo/) ([Source](./demo/index.html))
 
 ## Installation
 
@@ -138,10 +144,6 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
   <input type="tel" id="phone" name="phone">
 </form-show-if>
 ```
-
-## Demo
-
-[Live Demo](https://aarongustafson.github.io/form-show-if/demo/index.html) ([Source](./demo/index.html))
 
 ## Browser Support
 
