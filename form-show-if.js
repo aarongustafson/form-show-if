@@ -11,7 +11,9 @@ export class FormShowIfElement extends HTMLElement {
 
 			// Parse conditions once and cache
 			const conditionsAttr = this.getAttribute('conditions');
-			this.__conditions = conditionsAttr ? conditionsAttr.split('||') : [];
+			this.__conditions = conditionsAttr
+				? conditionsAttr.split('||')
+				: [];
 
 			this.__is_shown = null;
 			this.__disabledClass = this.getAttribute('disabled-class');
@@ -27,10 +29,26 @@ export class FormShowIfElement extends HTMLElement {
 
 	disconnectedCallback() {
 		// Clean up event listeners to prevent memory leaks
-		if (this.__$form && this.__boundCheckIfShouldShow && this.__boundHandleReset) {
-			this.__$form.removeEventListener('reset', this.__boundHandleReset, false);
-			this.__$form.removeEventListener('change', this.__boundCheckIfShouldShow, false);
-			this.__$form.removeEventListener('input', this.__boundCheckIfShouldShow, false);
+		if (
+			this.__$form &&
+			this.__boundCheckIfShouldShow &&
+			this.__boundHandleReset
+		) {
+			this.__$form.removeEventListener(
+				'reset',
+				this.__boundHandleReset,
+				false,
+			);
+			this.__$form.removeEventListener(
+				'change',
+				this.__boundCheckIfShouldShow,
+				false,
+			);
+			this.__$form.removeEventListener(
+				'input',
+				this.__boundCheckIfShouldShow,
+				false,
+			);
 		}
 	}
 
