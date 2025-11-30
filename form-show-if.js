@@ -1,7 +1,7 @@
 export class FormShowIfElement extends HTMLElement {
 	connectedCallback() {
-		// Ensures Light DOM is available
-		setTimeout(() => {
+		// Ensures Light DOM is available - use rAF for better performance
+		requestAnimationFrame(() => {
 			this.__$wrapper = this;
 			this.__$field = this.querySelector(
 				'input:not([type=submit],[type=reset],[type=image],[type=button]),select,textarea',
@@ -9,31 +9,50 @@ export class FormShowIfElement extends HTMLElement {
 			this.__$form = this.closest('form');
 			this.__$fields = [this.__$field];
 
-			this.__conditions = this.getAttribute('conditions').split('||');
+			// Parse conditions once and cache
+			const conditionsAttr = this.getAttribute('conditions');
+			this.__conditions = conditionsAttr ? conditionsAttr.split('||') : [];
 
 			this.__is_shown = null;
 			this.__disabledClass = this.getAttribute('disabled-class');
 			this.__enabledClass = this.getAttribute('enabled-class');
 
+			// Cache bound methods to avoid creating new functions on each call
+			this.__boundCheckIfShouldShow = this.__checkIfShouldShow.bind(this);
+			this.__boundHandleReset = this.__handleReset.bind(this);
+
 			this.__init();
 		});
 	}
 
+	disconnectedCallback() {
+		// Clean up event listeners to prevent memory leaks
+		if (this.__$form && this.__boundCheckIfShouldShow && this.__boundHandleReset) {
+			this.__$form.removeEventListener('reset', this.__boundHandleReset, false);
+			this.__$form.removeEventListener('change', this.__boundCheckIfShouldShow, false);
+			this.__$form.removeEventListener('input', this.__boundCheckIfShouldShow, false);
+		}
+	}
+
 	__addObservers() {
-		const reset = () => {
-			setTimeout(this.__checkIfShouldShow.bind(this), 100);
-		};
-		this.__$form.addEventListener('reset', reset.bind(this), false);
+		this.__$form.addEventListener('reset', this.__boundHandleReset, false);
 		this.__$form.addEventListener(
 			'change',
-			this.__checkIfShouldShow.bind(this),
+			this.__boundCheckIfShouldShow,
 			false,
 		);
 		this.__$form.addEventListener(
 			'input',
-			this.__checkIfShouldShow.bind(this),
+			this.__boundCheckIfShouldShow,
 			false,
 		);
+	}
+
+	__handleReset() {
+		// Use requestAnimationFrame for better performance than setTimeout
+		requestAnimationFrame(() => {
+			this.__checkIfShouldShow();
+		});
 	}
 
 	__determineWrapper() {
@@ -49,8 +68,8 @@ export class FormShowIfElement extends HTMLElement {
 
 	__gatherSiblingFields() {
 		const $fields = this.querySelectorAll(`[name="${this.__$field.name}"]`);
-		if ($fields.length) {
-			this.__$fields = [...this.__$fields, $fields];
+		if ($fields.length > 1) {
+			this.__$fields = Array.from($fields);
 		}
 	}
 
@@ -82,25 +101,33 @@ export class FormShowIfElement extends HTMLElement {
 
 	// Show / Hide Logic
 	__showField() {
+		// Early return if already shown
+		if (this.__is_shown === true) {
+			return;
+		}
 		this.__is_shown = true;
 		// Wrapper changes
 		if (!this.__disabledClass) {
 			this.__$wrapper.removeAttribute('hidden');
 		}
 		this.__toggleClasses();
-		// Disable field submission
+		// Enable field submission
 		this.__$fields.forEach(($field) => {
 			$field.disabled = false;
 		});
 	}
 	__hideField() {
+		// Early return if already hidden
+		if (this.__is_shown === false) {
+			return;
+		}
 		this.__is_shown = false;
 		// Wrapper changes
 		if (!this.__disabledClass) {
 			this.__$wrapper.hidden = true;
 		}
 		this.__toggleClasses();
-		// Enable field submission
+		// Disable field submission
 		this.__$fields.forEach(($field) => {
 			$field.disabled = true;
 		});
@@ -108,26 +135,27 @@ export class FormShowIfElement extends HTMLElement {
 
 	__checkIfShouldShow() {
 		let should_show = false;
-		let test_conditions = this.__conditions;
-		test_conditions.some((condition) => {
+		// Use cached conditions array directly
+		for (let i = 0; i < this.__conditions.length; i++) {
+			const condition = this.__conditions[i];
 			const [name, value] = condition.split('=');
 
 			const $field = this.__$form.elements[name];
 			if (!$field) {
-				return;
+				continue;
 			}
 
 			const current_value = FormShowIfElement.__getCurrentValue($field);
 			if (FormShowIfElement.__valuesMatch(value, current_value)) {
 				should_show = true;
-				return true;
+				break;
 			}
-			return false;
-		});
+		}
 
-		if (should_show && this.__is_shown !== true) {
+		// Early returns in show/hide methods prevent redundant work
+		if (should_show) {
 			this.__showField();
-		} else if (!should_show && this.__is_shown !== false) {
+		} else {
 			this.__hideField();
 		}
 	}
@@ -152,15 +180,12 @@ export class FormShowIfElement extends HTMLElement {
 
 		// Checkbox array (multiple checkboxes with same name)
 		if ($field.length && $field[0].type && $field[0].type == 'checkbox') {
-			let value = [];
-			let length = $field.length;
-			while (length--) {
-				let $current_field = $field[length];
-				if ($current_field.checked) {
-					value.push($current_field.value);
+			const value = [];
+			for (let i = 0; i < $field.length; i++) {
+				if ($field[i].checked) {
+					value.push($field[i].value);
 				}
 			}
-			value.reverse();
 			return value;
 		}
 
