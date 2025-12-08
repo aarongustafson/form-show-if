@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>form-show-if via unpkg</title>
+		<style>
+			body {
+				font-family: system-ui, sans-serif;
+				margin: 2rem;
+				line-height: 1.5;
+			}
+
+			form-show-if {
+				display: block;
+				max-width: 480px;
+			}
+
+			label,
+			input,
+			select {
+				display: block;
+				width: 100%;
+				font: inherit;
+			}
+
+			input,
+			select {
+				margin-block: 0.5rem 1rem;
+				padding: 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>unpkg CDN sanity check</h1>
+		<p>
+			This page loads the guarded definition helper from
+			<code>unpkg</code> and registers the element when supported.
+		</p>
+
+		<label for="contact-method">Preferred contact method</label>
+		<select id="contact-method" name="contact-method">
+			<option value="">Select one</option>
+			<option value="email">Email</option>
+			<option value="phone">Phone</option>
+		</select>
+
+		<form-show-if conditions="contact-method=email">
+			<label for="email">Email (shown if email selected)</label>
+			<input type="email" id="email" name="email" />
+		</form-show-if>
+
+		<script type="module">
+			import { defineFormShowIf } from 'https://unpkg.com/@aarongustafson/form-show-if@latest/define.js?module';
+
+			defineFormShowIf();
+		</script>
+	</body>
+</html>
