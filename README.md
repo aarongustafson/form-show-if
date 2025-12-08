@@ -16,26 +16,12 @@ npm install @aarongustafson/form-show-if
 
 ## Usage
 
-### Option 1: Auto-define the custom element (easiest)
-
-Import the package to automatically define the `<form-show-if>` custom element:
-
-```javascript
-import '@aarongustafson/form-show-if';
-```
-
-Or use the define-only script in HTML:
-
-```html
-<script src="./node_modules/@aarongustafson/form-show-if/define.js" type="module"></script>
-```
-
-### Option 2: Import the class and define manually
+### Option 1: Import the class and define manually
 
 Import the class and define the custom element with your preferred tag name:
 
 ```javascript
-import { FormShowIfElement } from '@aarongustafson/form-show-if/form-show-if.js';
+import { FormShowIfElement } from '@aarongustafson/form-show-if';
 
 // Define with default name
 customElements.define('form-show-if', FormShowIfElement);
@@ -44,13 +30,26 @@ customElements.define('form-show-if', FormShowIfElement);
 customElements.define('my-conditional-field', FormShowIfElement);
 ```
 
-### Option 3: Import everything (class + auto-define)
+### Option 2: Auto-define the custom element (browser environments only)
 
-Get both the class export and automatic element definition:
+Use the guarded definition helper to register the element when `customElements` is available:
 
 ```javascript
-import { FormShowIfElement } from '@aarongustafson/form-show-if';
-// The custom element is now defined AND you have access to the class
+import '@aarongustafson/form-show-if/define.js';
+```
+
+If you prefer to control when the element is registered, call the helper directly:
+
+```javascript
+import { defineFormShowIf } from '@aarongustafson/form-show-if/define.js';
+
+defineFormShowIf();
+```
+
+You can also include the guarded script from HTML:
+
+```html
+<script src="./node_modules/@aarongustafson/form-show-if/define.js" type="module"></script>
 ```
 
 ### CDN Usage
@@ -58,7 +57,7 @@ import { FormShowIfElement } from '@aarongustafson/form-show-if';
 You can also use the component directly from a CDN:
 
 ```html
-<script src="https://unpkg.com/@aarongustafson/form-show-if/define.js" type="module"></script>
+<script src="https://unpkg.com/@aarongustafson/form-show-if@latest/define.js" type="module"></script>
 ```
 
 ## API
