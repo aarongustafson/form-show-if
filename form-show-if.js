@@ -6,7 +6,7 @@ export class FormShowIfElement extends HTMLElement {
 			this.__$field = this.querySelector(
 				'input:not([type=submit],[type=reset],[type=image],[type=button]),select,textarea',
 			);
-			this.__$form = this.closest('form');
+			this.__$form = this.closest('form') || document.body;
 			this.__$fields = [this.__$field];
 
 			// Parse conditions once and cache
@@ -34,11 +34,14 @@ export class FormShowIfElement extends HTMLElement {
 			this.__boundCheckIfShouldShow &&
 			this.__boundHandleReset
 		) {
-			this.__$form.removeEventListener(
-				'reset',
-				this.__boundHandleReset,
-				false,
-			);
+			// Only remove reset listener if we're attached to an actual form
+			if (this.__$form.tagName === 'FORM') {
+				this.__$form.removeEventListener(
+					'reset',
+					this.__boundHandleReset,
+					false,
+				);
+			}
 			this.__$form.removeEventListener(
 				'change',
 				this.__boundCheckIfShouldShow,
@@ -53,7 +56,14 @@ export class FormShowIfElement extends HTMLElement {
 	}
 
 	__addObservers() {
-		this.__$form.addEventListener('reset', this.__boundHandleReset, false);
+		// Only add reset listener if we're attached to an actual form
+		if (this.__$form.tagName === 'FORM') {
+			this.__$form.addEventListener(
+				'reset',
+				this.__boundHandleReset,
+				false,
+			);
+		}
 		this.__$form.addEventListener(
 			'change',
 			this.__boundCheckIfShouldShow,
@@ -158,7 +168,17 @@ export class FormShowIfElement extends HTMLElement {
 			const condition = this.__conditions[i];
 			const [name, value] = condition.split('=');
 
-			const $field = this.__$form.elements[name];
+			// Try form.elements first, fall back to querySelectorAll for non-form contexts
+			let $field = this.__$form.elements
+				? this.__$form.elements[name]
+				: null;
+			if (!$field) {
+				// For non-form contexts, get all elements with this name
+				$field = this.__$form.querySelectorAll(`[name="${name}"]`);
+				if ($field.length === 0) {
+					continue;
+				}
+			}
 			if (!$field) {
 				continue;
 			}
@@ -186,6 +206,31 @@ export class FormShowIfElement extends HTMLElement {
 	}
 
 	static __getCurrentValue($field) {
+		// Handle NodeList from querySelectorAll (non-form context)
+		if ($field instanceof NodeList) {
+			// Check if it's a checkbox or radio group
+			if ($field[0] && $field[0].type === 'checkbox') {
+				const value = [];
+				for (let i = 0; i < $field.length; i++) {
+					if ($field[i].checked) {
+						value.push($field[i].value);
+					}
+				}
+				return value;
+			}
+			// For radio buttons, find the checked one
+			if ($field[0] && $field[0].type === 'radio') {
+				for (let i = 0; i < $field.length; i++) {
+					if ($field[i].checked) {
+						return $field[i].value;
+					}
+				}
+				return '';
+			}
+			// For other types, just use the first element
+			return $field[0] ? $field[0].value : '';
+		}
+
 		// Single checkbox
 		if ($field.type === 'checkbox' && !$field.length) {
 			// Only return the value if the checkbox is actually checked
@@ -196,7 +241,7 @@ export class FormShowIfElement extends HTMLElement {
 			return '';
 		}
 
-		// Checkbox array (multiple checkboxes with same name)
+		// Checkbox array (multiple checkboxes with same name) from form.elements
 		if ($field.length && $field[0].type && $field[0].type == 'checkbox') {
 			const value = [];
 			for (let i = 0; i < $field.length; i++) {
