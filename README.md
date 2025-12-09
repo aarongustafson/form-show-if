@@ -6,7 +6,9 @@ Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes
 
 ## Demo
 
-[Live Demo](https://aarongustafson.github.io/form-show-if/demo/) ([Source](./demo/index.html))
+- [Live Demo](https://aarongustafson.github.io/form-show-if/demo/) ([Source](./demo/index.html))
+- [ESM Demo](https://aarongustafson.github.io/form-show-if/demo/esm.html) ([Source](./demo/esm.html))
+- [unpkg Demo](https://aarongustafson.github.io/form-show-if/demo/unpkg.html) ([Source](./demo/unpkg.html))
 
 ## Installation
 
