@@ -1,6 +1,6 @@
 {
 	"name": "@aarongustafson/form-show-if",
-	"version": "3.0.0",
+	"version": "3.0.1",
 	"description": "Web component that enables you to make one HTML form field show (or not) based on the value(s) of another field.",
 	"keywords": [
 		"html",
