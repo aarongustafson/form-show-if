@@ -5,9 +5,7 @@ on:
     branches: [main]
     paths:
       - "demo/**"
-      - "form-obfuscator.js"
-      - "define.js"
-      - "index.js"
+      - "README.md"
   workflow_dispatch:
 
 permissions:
@@ -31,9 +29,10 @@ jobs:
 
       - name: Convert README to index.html
         run: |
-          npm install -g marked
-          echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>table-modifiable</title><style>body{max-width:800px;margin:2rem auto;padding:0 1rem;font-family:system-ui,-apple-system,sans-serif;line-height:1.6}code{background:#f4f4f4;padding:2px 6px;border-radius:3px}pre{background:#f4f4f4;padding:1rem;border-radius:5px;overflow-x:auto}pre code{background:none;padding:0}</style></head><body>' > index.html
-          marked README.md >> index.html
+          echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>' > index.html
+          echo "${{ github.event.repository.name }}" >> index.html
+          echo '</title><style>:root{color-scheme:light dark;}body{max-width:800px;margin:2rem auto;padding:0 1rem;font-family:system-ui,-apple-system,sans-serif;line-height:1.6}code{background:ButtonFace;color:ButtonText;padding:2px 6px;border-radius:3px}a:link{color:inherit;text-decoration-color:hotpink;}pre{background:ButtonFace;color:ButtonText;padding:1rem;border-radius:5px;overflow-x:auto}pre code{background:none;padding:0}</style></head><body>' >> index.html
+          npx marked README.md >> index.html
           echo '</body></html>' >> index.html
 
       - name: Setup Pages
