@@ -1,23 +1,121 @@
 export class FormShowIfElement extends HTMLElement {
+	static get observedAttributes() {
+		return ['conditions', 'disabled-class', 'enabled-class'];
+	}
+
+	constructor() {
+		super();
+		this.__$wrapper = null;
+		this.__$field = null;
+		this.__$form = null;
+		this.__$fields = [];
+		this.__conditions = [];
+		this.__is_shown = null;
+		this.__disabledClass = null;
+		this.__enabledClass = null;
+		this.__boundCheckIfShouldShow = null;
+		this.__boundHandleReset = null;
+		this.__rafId = null;
+	}
+
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (oldValue === newValue) {
+			return;
+		}
+		switch (name) {
+			case 'conditions':
+				this.__conditions = newValue
+					? newValue.split('||')
+					: [];
+				if (this.isConnected && this.__$field) {
+					this.__checkIfShouldShow();
+				}
+				break;
+			case 'disabled-class':
+				this.__disabledClass = newValue || null;
+				if (this.isConnected && this.__$wrapper) {
+					this.__toggleClasses();
+					if (!this.__disabledClass && !this.__is_shown) {
+						this.__$wrapper.hidden = true;
+					}
+				}
+				break;
+			case 'enabled-class':
+				this.__enabledClass = newValue || null;
+				if (this.isConnected && this.__$wrapper) {
+					this.__toggleClasses();
+				}
+				break;
+		}
+	}
+
+	get conditions() {
+		return this.getAttribute('conditions');
+	}
+	set conditions(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('conditions');
+		} else {
+			this.setAttribute('conditions', value);
+		}
+	}
+
+	get disabledClass() {
+		return this.getAttribute('disabled-class');
+	}
+	set disabledClass(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('disabled-class');
+		} else {
+			this.setAttribute('disabled-class', value);
+		}
+	}
+
+	get enabledClass() {
+		return this.getAttribute('enabled-class');
+	}
+	set enabledClass(value) {
+		if (value === null || value === undefined) {
+			this.removeAttribute('enabled-class');
+		} else {
+			this.setAttribute('enabled-class', value);
+		}
+	}
+
+	__upgradeProperty(prop) {
+		if (Object.prototype.hasOwnProperty.call(this, prop)) {
+			const value = this[prop];
+			delete this[prop];
+			this[prop] = value;
+		}
+	}
+
 	connectedCallback() {
+		this.__upgradeProperty('conditions');
+		this.__upgradeProperty('disabledClass');
+		this.__upgradeProperty('enabledClass');
 		// Ensures Light DOM is available - use rAF for better performance
-		requestAnimationFrame(() => {
+		this.__rafId = requestAnimationFrame(() => {
+			this.__rafId = null;
 			this.__$wrapper = this;
 			this.__$field = this.querySelector(
 				'input:not([type=submit],[type=reset],[type=image],[type=button]),select,textarea',
 			);
 			this.__$form = this.closest('form') || document.body;
-			this.__$fields = [this.__$field];
+			this.__$fields = this.__$field ? [this.__$field] : [];
+			if (!this.__$field) {
+				return;
+			}
 
 			// Parse conditions once and cache
-			const conditionsAttr = this.getAttribute('conditions');
+			const conditionsAttr = this.conditions;
 			this.__conditions = conditionsAttr
 				? conditionsAttr.split('||')
 				: [];
 
 			this.__is_shown = null;
-			this.__disabledClass = this.getAttribute('disabled-class');
-			this.__enabledClass = this.getAttribute('enabled-class');
+			this.__disabledClass = this.disabledClass;
+			this.__enabledClass = this.enabledClass;
 
 			// Cache bound methods to avoid creating new functions on each call
 			this.__boundCheckIfShouldShow = this.__checkIfShouldShow.bind(this);
@@ -103,7 +201,7 @@ export class FormShowIfElement extends HTMLElement {
 
 	// Wrapper `class` Management
 	__toggleEnabledClass() {
-		if (!this.__enabledClass) {
+		if (!this.__enabledClass || !this.__$wrapper) {
 			return;
 		}
 		if (this.__is_shown) {
@@ -113,7 +211,7 @@ export class FormShowIfElement extends HTMLElement {
 		}
 	}
 	__toggleDisabledClass() {
-		if (!this.__disabledClass) {
+		if (!this.__disabledClass || !this.__$wrapper) {
 			return;
 		}
 		if (!this.__is_shown) {
