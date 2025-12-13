@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { fireEvent, waitFor } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import { FormShowIfElement } from './form-show-if.js';
@@ -12,6 +12,10 @@ describe('FormShowIfElement', () => {
 		container = document.createElement('div');
 		document.body.appendChild(container);
 		user = userEvent.setup();
+	});
+
+	afterEach(() => {
+		document.body.removeChild(container);
 	});
 
 	const createForm = (formHTML) => {
@@ -46,10 +50,9 @@ describe('FormShowIfElement', () => {
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
 			// Wait for connectedCallback to complete
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially, field should be hidden since no radio is selected
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 
 		it('should show field when condition is met', async () => {
@@ -73,7 +76,9 @@ describe('FormShowIfElement', () => {
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
 			// Wait for connectedCallback
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Select "yes" using userEvent
 			await user.click(yesRadio);
@@ -109,19 +114,144 @@ describe('FormShowIfElement', () => {
 			const formShowIf = container.querySelector('form-show-if');
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Select "yes" - should show
 			yesRadio.checked = true;
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Select "no" - should hide
 			noRadio.checked = true;
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
+		});
+	});
+
+	describe('Property reflection & upgrade', () => {
+		it('reflects properties to attributes', () => {
+			const element = document.createElement('form-show-if');
+			element.conditions = 'email=*';
+			element.enabledClass = 'visible';
+			element.disabledClass = 'hidden';
+			expect(element.getAttribute('conditions')).toBe('email=*');
+			expect(element.getAttribute('enabled-class')).toBe('visible');
+			expect(element.getAttribute('disabled-class')).toBe('hidden');
+		});
+
+		it('exposes reflected attributes via properties', () => {
+			const element = document.createElement('form-show-if');
+			element.setAttribute('conditions', 'foo=bar');
+			element.setAttribute('enabled-class', 'show');
+			element.setAttribute('disabled-class', 'hide');
+			expect(element.conditions).toBe('foo=bar');
+			expect(element.enabledClass).toBe('show');
+			expect(element.disabledClass).toBe('hide');
+		});
+
+		it('upgrades pre-set properties when connected', async () => {
+			container.innerHTML = `
+				<form>
+					<input type="text" name="email" value="test">
+				</form>
+			`;
+			const form = container.querySelector('form');
+			const element = document.createElement('form-show-if');
+			element.innerHTML = `
+				<label>
+					Dependent
+					<input type="text" name="dependent">
+				</label>
+			`;
+			Object.defineProperty(element, 'conditions', {
+				value: 'email=*',
+				configurable: true,
+				writable: true,
+			});
+			form.appendChild(element);
+			await waitFor(() => {
+				expect(element.getAttribute('conditions')).toBe('email=*');
+			});
+		});
+	});
+
+	describe('Attribute reactions', () => {
+		it('re-parses conditions when attribute changes', async () => {
+			const form = createForm(`
+				<input type="text" name="email">
+				<form-show-if conditions="email=special">
+					<label>
+						Dependent
+						<input type="text" name="dependent">
+					</label>
+				</form-show-if>
+			`);
+			const element = form.querySelector('form-show-if');
+			const emailInput = form.querySelector('[name="email"]');
+			const dependent = element.querySelector('[name="dependent"]');
+			emailInput.value = 'anything';
+			form.dispatchEvent(new Event('input', { bubbles: true }));
+			await waitFor(() => {
+				expect(dependent.disabled).toBe(true);
+			});
+			element.setAttribute('conditions', 'email=*');
+			await waitFor(() => {
+				expect(dependent.disabled).toBe(false);
+			});
+		});
+
+		it('retoggles classes when enabled/disabled class attributes change', async () => {
+			const form = createForm(`
+				<input type="text" name="email" value="test">
+				<form-show-if conditions="email=*" disabled-class="hidden">
+					<label>
+						Dependent
+						<input type="text" name="dependent">
+					</label>
+				</form-show-if>
+			`);
+			const element = form.querySelector('form-show-if');
+			await waitFor(() => {
+				expect(element.classList.contains('hidden')).toBe(false);
+			});
+			element.setAttribute('enabled-class', 'showing');
+			await waitFor(() => {
+				expect(element.classList.contains('showing')).toBe(true);
+			});
+		});
+	});
+
+	describe('Lifecycle cleanup', () => {
+		it('removes listeners and cancels RAF on disconnect', async () => {
+			const form = createForm(`
+				<input type="text" name="email">
+				<form-show-if conditions="email=*">
+					<label>
+						Dependent
+						<input type="text" name="dependent">
+					</label>
+				</form-show-if>
+			`);
+			const element = form.querySelector('form-show-if');
+			const removeEventListenerSpy = vi.spyOn(form, 'removeEventListener');
+			await waitFor(() => {
+				expect(element.__boundCheckIfShouldShow).toBeTruthy();
+			});
+			form.removeChild(element);
+			await waitFor(() => {
+				expect(removeEventListenerSpy).toHaveBeenCalledWith(
+					'change',
+					element.__boundCheckIfShouldShow,
+					false,
+				);
+			});
+			removeEventListenerSpy.mockRestore();
 		});
 	});
 
@@ -149,25 +279,30 @@ describe('FormShowIfElement', () => {
 			const formShowIf = container.querySelector('form-show-if');
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// option1 should show the field
 			select.value = 'option1';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// option2 should also show the field
 			select.value = 'option2';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// option3 should hide the field
 			select.value = 'option3';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 	});
 
@@ -193,22 +328,23 @@ describe('FormShowIfElement', () => {
 			const formShowIf = container.querySelector('form-show-if');
 			const nicknameInput = formShowIf.querySelector('[name="nickname"]');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Empty value should hide
-			expect(nicknameInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(true);
+			});
 
 			// Any value should show
 			nameInput.value = 'John';
 			form.dispatchEvent(new Event('input', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(nicknameInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(false);
+			});
 
 			// Clearing should hide again
 			nameInput.value = '';
 			form.dispatchEvent(new Event('input', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(nicknameInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(true);
+			});
 		});
 	});
 
@@ -242,28 +378,30 @@ describe('FormShowIfElement', () => {
 			const formShowIf = container.querySelector('form-show-if');
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially hidden
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Checking option2 should show
 			checkboxes[1].checked = true;
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Checking option1 too should keep it shown
 			checkboxes[0].checked = true;
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Unchecking option2 should hide
 			checkboxes[1].checked = false;
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 	});
 
@@ -288,20 +426,21 @@ describe('FormShowIfElement', () => {
 			const select = form.querySelector('[name="choice"]');
 			const formShowIf = container.querySelector('form-show-if');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially should not have enabled-class
-			expect(formShowIf.classList.contains('is-visible')).toBe(false); // Selecting should add class
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-visible')).toBe(false);
+			});
 			select.value = 'yes';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(formShowIf.classList.contains('is-visible')).toBe(true);
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-visible')).toBe(true);
+			});
 
 			// Deselecting should remove class
 			select.value = '';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(formShowIf.classList.contains('is-visible')).toBe(false);
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-visible')).toBe(false);
+			});
 		});
 
 		it('should add/remove disabled-class', async () => {
@@ -324,20 +463,21 @@ describe('FormShowIfElement', () => {
 			const select = form.querySelector('[name="choice"]');
 			const formShowIf = container.querySelector('form-show-if');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially should have disabled-class
-			expect(formShowIf.classList.contains('is-hidden')).toBe(true); // Selecting should remove class
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-hidden')).toBe(true);
+			});
 			select.value = 'yes';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(formShowIf.classList.contains('is-hidden')).toBe(false);
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-hidden')).toBe(false);
+			});
 
 			// Deselecting should add class back
 			select.value = '';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(formShowIf.classList.contains('is-hidden')).toBe(true);
+			await waitFor(() => {
+				expect(formShowIf.classList.contains('is-hidden')).toBe(true);
+			});
 		});
 	});
 
@@ -363,20 +503,22 @@ describe('FormShowIfElement', () => {
 			const formShowIf = container.querySelector('form-show-if');
 			const followupInput = formShowIf.querySelector('[name="followup"]');
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Select a value to show the field
 			select.value = 'yes';
 			form.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Reset the form
 			form.reset();
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Field should be hidden again
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 	});
 
@@ -524,22 +666,23 @@ describe('FormShowIfElement', () => {
 			);
 
 			// Wait for connectedCallback
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially hidden
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Select "yes" - should show
 			yesRadio.checked = true;
 			document.body.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Select "no" - should hide
 			noRadio.checked = true;
 			document.body.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 
 		it('should handle text input outside of form', async () => {
@@ -566,22 +709,23 @@ describe('FormShowIfElement', () => {
 				'[name="standalone-nickname"]',
 			);
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Empty value should hide
-			expect(nicknameInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(true);
+			});
 
 			// Any value should show
 			nameInput.value = 'John';
 			document.body.dispatchEvent(new Event('input', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(nicknameInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(false);
+			});
 
 			// Clearing should hide again
 			nameInput.value = '';
 			document.body.dispatchEvent(new Event('input', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(nicknameInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(nicknameInput.disabled).toBe(true);
+			});
 		});
 
 		it('should handle checkboxes outside of form', async () => {
@@ -616,22 +760,23 @@ describe('FormShowIfElement', () => {
 				'[name="standalone-followup"]',
 			);
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Initially hidden
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Checking option2 should show
 			checkboxes[1].checked = true;
 			document.body.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Unchecking option2 should hide
 			checkboxes[1].checked = false;
 			document.body.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(true);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 		});
 
 		// Note: Select elements outside forms work, but @testing-library/user-event
@@ -660,20 +805,22 @@ describe('FormShowIfElement', () => {
 				'[name="standalone-followup"]',
 			);
 
-			await new Promise((resolve) => setTimeout(resolve, 150));
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(true);
+			});
 
 			// Select "yes" - should show
 			yesRadio.checked = true;
 			document.body.dispatchEvent(new Event('change', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 50));
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 
 			// Reset event on document.body should not cause errors
 			document.body.dispatchEvent(new Event('reset', { bubbles: true }));
-			await new Promise((resolve) => setTimeout(resolve, 150));
-
-			// Field should still be shown (no reset behavior outside of forms)
-			expect(followupInput.disabled).toBe(false);
+			await waitFor(() => {
+				expect(followupInput.disabled).toBe(false);
+			});
 		});
 	});
 });
