@@ -4,6 +4,12 @@
 
 Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes you only want a field to show when certain other fields have a (particular) value. The `form-show-if` web component enables that.
 
+## TypeScript Support
+
+- Ships with bundled `.d.ts` definitions so editors and TypeScript builds fully understand `FormShowIfElement`.
+- The package export map exposes the types automatically; no extra configuration is required to consume them in TS projects.
+- `HTMLElementTagNameMap` is augmented so `form-show-if` elements are correctly typed when using JSX/TSX or querying via `document.querySelector`.
+
 ## Demo
 
 - [Live Demo](https://aarongustafson.github.io/form-show-if/demo/) ([Source](./demo/index.html))
