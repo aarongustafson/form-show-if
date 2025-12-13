@@ -32,7 +32,8 @@
 			"import": "./index.js"
 		},
 		"./form-show-if.js": {
-			"import": "./form-show-if.js"
+			"import": "./form-show-if.js",
+			"types": "./form-show-if.d.ts"
 		},
 		"./define.js": {
 			"import": "./define.js"
@@ -41,6 +42,7 @@
 	},
 	"files": [
 		"form-show-if.js",
+		"form-show-if.d.ts",
 		"define.js",
 		"index.js",
 		"custom-elements.json",
