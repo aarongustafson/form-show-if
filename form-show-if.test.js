@@ -239,7 +239,10 @@ describe('FormShowIfElement', () => {
 				</form-show-if>
 			`);
 			const element = form.querySelector('form-show-if');
-			const removeEventListenerSpy = vi.spyOn(form, 'removeEventListener');
+			const removeEventListenerSpy = vi.spyOn(
+				form,
+				'removeEventListener',
+			);
 			await waitFor(() => {
 				expect(element.__boundCheckIfShouldShow).toBeTruthy();
 			});

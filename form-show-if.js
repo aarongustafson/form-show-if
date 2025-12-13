@@ -25,9 +25,7 @@ export class FormShowIfElement extends HTMLElement {
 		}
 		switch (name) {
 			case 'conditions':
-				this.__conditions = newValue
-					? newValue.split('||')
-					: [];
+				this.__conditions = newValue ? newValue.split('||') : [];
 				this.__fieldCache = Object.create(null);
 				if (this.isConnected && this.__$field) {
 					this.__checkIfShouldShow();
@@ -318,7 +316,11 @@ export class FormShowIfElement extends HTMLElement {
 			return this.__fieldCache[name];
 		}
 		let $field = null;
-		if (this.__$form && 'elements' in this.__$form && this.__$form.elements) {
+		if (
+			this.__$form &&
+			'elements' in this.__$form &&
+			this.__$form.elements
+		) {
 			const candidate = this.__$form.elements[name];
 			if (candidate) {
 				$field = candidate;
