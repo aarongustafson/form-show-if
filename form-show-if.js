@@ -10,6 +10,7 @@ export class FormShowIfElement extends HTMLElement {
 		this.__$form = null;
 		this.__$fields = [];
 		this.__conditions = [];
+		this.__fieldCache = Object.create(null);
 		this.__is_shown = null;
 		this.__disabledClass = null;
 		this.__enabledClass = null;
@@ -27,6 +28,7 @@ export class FormShowIfElement extends HTMLElement {
 				this.__conditions = newValue
 					? newValue.split('||')
 					: [];
+				this.__fieldCache = Object.create(null);
 				if (this.isConnected && this.__$field) {
 					this.__checkIfShouldShow();
 				}
@@ -116,6 +118,7 @@ export class FormShowIfElement extends HTMLElement {
 			this.__is_shown = null;
 			this.__disabledClass = this.disabledClass;
 			this.__enabledClass = this.enabledClass;
+			this.__fieldCache = Object.create(null);
 
 			// Cache bound methods to avoid creating new functions on each call
 			this.__boundCheckIfShouldShow = this.__checkIfShouldShow.bind(this);
@@ -127,6 +130,10 @@ export class FormShowIfElement extends HTMLElement {
 
 	disconnectedCallback() {
 		// Clean up event listeners to prevent memory leaks
+		if (this.__rafId !== null) {
+			cancelAnimationFrame(this.__rafId);
+			this.__rafId = null;
+		}
 		if (
 			this.__$form &&
 			this.__boundCheckIfShouldShow &&
@@ -151,27 +158,34 @@ export class FormShowIfElement extends HTMLElement {
 				false,
 			);
 		}
+		this.__$fields = [];
+		this.__$field = null;
+		this.__$form = null;
+		this.__$wrapper = null;
+		this.__fieldCache = Object.create(null);
 	}
 
 	__addObservers() {
 		// Only add reset listener if we're attached to an actual form
-		if (this.__$form.tagName === 'FORM') {
+		if (this.__$form?.tagName === 'FORM') {
 			this.__$form.addEventListener(
 				'reset',
 				this.__boundHandleReset,
 				false,
 			);
 		}
-		this.__$form.addEventListener(
-			'change',
-			this.__boundCheckIfShouldShow,
-			false,
-		);
-		this.__$form.addEventListener(
-			'input',
-			this.__boundCheckIfShouldShow,
-			false,
-		);
+		if (this.__$form) {
+			this.__$form.addEventListener(
+				'change',
+				this.__boundCheckIfShouldShow,
+				false,
+			);
+			this.__$form.addEventListener(
+				'input',
+				this.__boundCheckIfShouldShow,
+				false,
+			);
+		}
 	}
 
 	__handleReset() {
@@ -193,6 +207,9 @@ export class FormShowIfElement extends HTMLElement {
 	}
 
 	__gatherSiblingFields() {
+		if (!this.__$field?.name) {
+			return;
+		}
 		const $fields = this.querySelectorAll(`[name="${this.__$field.name}"]`);
 		if ($fields.length > 1) {
 			this.__$fields = Array.from($fields);
@@ -249,7 +266,7 @@ export class FormShowIfElement extends HTMLElement {
 		}
 		this.__is_shown = false;
 		// Wrapper changes
-		if (!this.__disabledClass) {
+		if (!this.__disabledClass && this.__$wrapper) {
 			this.__$wrapper.hidden = true;
 		}
 		this.__toggleClasses();
@@ -260,23 +277,16 @@ export class FormShowIfElement extends HTMLElement {
 	}
 
 	__checkIfShouldShow() {
+		if (!this.__$form) {
+			return;
+		}
 		let should_show = false;
 		// Use cached conditions array directly
 		for (let i = 0; i < this.__conditions.length; i++) {
 			const condition = this.__conditions[i];
 			const [name, value] = condition.split('=');
 
-			// Try form.elements first, fall back to querySelectorAll for non-form contexts
-			let $field = this.__$form.elements
-				? this.__$form.elements[name]
-				: null;
-			if (!$field) {
-				// For non-form contexts, get all elements with this name
-				$field = this.__$form.querySelectorAll(`[name="${name}"]`);
-				if ($field.length === 0) {
-					continue;
-				}
-			}
+			const $field = this.__getConditionField(name);
 			if (!$field) {
 				continue;
 			}
@@ -301,6 +311,29 @@ export class FormShowIfElement extends HTMLElement {
 		this.__gatherSiblingFields();
 		this.__addObservers();
 		this.__checkIfShouldShow();
+	}
+
+	__getConditionField(name) {
+		if (this.__fieldCache[name]) {
+			return this.__fieldCache[name];
+		}
+		let $field = null;
+		if (this.__$form && 'elements' in this.__$form && this.__$form.elements) {
+			const candidate = this.__$form.elements[name];
+			if (candidate) {
+				$field = candidate;
+			}
+		}
+		if (!$field && this.__$form) {
+			const nodeList = this.__$form.querySelectorAll(`[name="${name}"]`);
+			if (nodeList.length > 0) {
+				$field = nodeList;
+			}
+		}
+		if ($field) {
+			this.__fieldCache[name] = $field;
+		}
+		return $field;
 	}
 
 	static __getCurrentValue($field) {
