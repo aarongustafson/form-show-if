@@ -27,6 +27,7 @@
 	"main": "index.js",
 	"module": "form-show-if.js",
 	"customElements": "custom-elements.json",
+	"types": "form-show-if.d.ts",
 	"exports": {
 		".": {
 			"import": "./index.js"
