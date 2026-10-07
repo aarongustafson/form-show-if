@@ -30,11 +30,12 @@
 	"types": "form-show-if.d.ts",
 	"exports": {
 		".": {
+			"types": "./form-show-if.d.ts",
 			"import": "./index.js"
 		},
 		"./form-show-if.js": {
-			"import": "./form-show-if.js",
-			"types": "./form-show-if.d.ts"
+			"types": "./form-show-if.d.ts",
+			"import": "./form-show-if.js"
 		},
 		"./define.js": {
 			"import": "./define.js"
@@ -51,7 +52,7 @@
 		"LICENSE"
 	],
 	"engines": {
-		"node": ">=20.0.0"
+		"node": ">=22.0.0"
 	},
 	"scripts": {
 		"test": "vitest",
