@@ -430,6 +430,19 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 		await demo(page, name);
 		if (name !== 'index.html')
 			await page.locator('#contact-method').selectOption('email');
+		if (name === 'index.html') {
+			for (const field of await page
+				.locator('.demo input[type="email"]')
+				.all()) {
+				if ((await field.isVisible()) && (await field.isEnabled()))
+					await field.fill('foo@bar.tld');
+			}
+			await page.locator('[name="radio"][value="other"]').check();
+			await page.locator('[name="checkbox[]"][value="other"]').check();
+			await page.locator('#feature-type').selectOption('advanced');
+			await page.locator('[name="contact[]"][value="email"]').check();
+			await page.locator('[name="contact[]"][value="phone"]').check();
+		}
 		for (const width of [1400, 1024, 768, 320]) {
 			await page.setViewportSize({ width, height: 900 });
 			await page
@@ -452,11 +465,19 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			expect(field.width).toBeGreaterThanOrEqual(120);
 		}
 		await page.addStyleTag({ content: ':root { font-size: 200%; }' });
-		const enlarged = await page
-			.locator('.code-demo-pair .demo input[type="email"]')
-			.first()
-			.boundingBox();
-		expect(enlarged.width).toBeGreaterThanOrEqual(120);
+		for (const field of await page
+			.locator(
+				'.demo input:not([type="radio"], [type="checkbox"]), .demo select, .demo textarea',
+			)
+			.all()) {
+			if (await field.isVisible()) {
+				const enlarged = await field.boundingBox();
+				expect(
+					enlarged.width,
+					await field.getAttribute('name'),
+				).toBeGreaterThanOrEqual(120);
+			}
+		}
 		expect(
 			await page.evaluate(
 				() => document.documentElement.scrollWidth > innerWidth,

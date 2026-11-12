@@ -316,7 +316,10 @@ form-show-if:not([hidden]) {
 }
 
 @media (max-width: 600px) {
-	body,
+	body {
+		padding: 0.5rem;
+	}
+
 	.demo-section,
 	.demo {
 		padding: 0.75rem;
