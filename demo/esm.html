@@ -7,23 +7,73 @@
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
-		<h1>esm.sh CDN sanity check</h1>
-		<p>
-			This page loads the component class from <code>esm.sh</code> and
-			registers it manually.
-		</p>
+		<header>
+			<h1>&lt;form-show-if&gt; via esm.sh</h1>
+			<p>
+				Import the class, then register it. See the
+				<a href="../">README</a> for the API.
+			</p>
+		</header>
+		<main>
+			<p class="note">
+				Select Email to reveal the dependent field. Focus stays on the
+				select. Without JavaScript or if the CDN import fails, the
+				authored email field remains available. Check the console and
+				import URL if enhancement fails; entered values remain in the
+				native fields.
+			</p>
+			<section class="demo-section">
+				<h2>Manual registration</h2>
+				<div class="code-demo-pair">
+					<pre><code>&lt;form&gt;
+  &lt;label for="contact-method"&gt;Preferred contact method&lt;/label&gt;
+  &lt;select id="contact-method" name="contact-method"&gt;
+    &lt;option value=""&gt;Select one&lt;/option&gt;
+    &lt;option value="email"&gt;Email&lt;/option&gt;
+    &lt;option value="phone"&gt;Phone&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;form-show-if conditions="contact-method=email"&gt;
+    &lt;label for="email"&gt;Email address&lt;/label&gt;
+    &lt;input type="email" id="email" name="email" /&gt;
+  &lt;/form-show-if&gt;
+&lt;/form&gt;
 
-		<label for="contact-method">Preferred contact method</label>
-		<select id="contact-method" name="contact-method">
-			<option value="">Select one</option>
-			<option value="email">Email</option>
-			<option value="phone">Phone</option>
-		</select>
-
-		<form-show-if conditions="contact-method=email">
-			<label for="email">Email (shown if email selected)</label>
-			<input type="email" id="email" name="email" />
-		</form-show-if>
+&lt;script type="module"&gt;
+  import { FormShowIfElement } from
+    'https://esm.sh/@aarongustafson/form-show-if@3.1.3/form-show-if.js?bundle&amp;target=es2022';
+  if (!customElements.get('form-show-if')) {
+    customElements.define('form-show-if', FormShowIfElement);
+  }
+&lt;/script&gt;</code></pre>
+					<div class="demo">
+						<form aria-label="Contact details">
+							<label for="contact-method"
+								>Preferred contact method</label
+							>
+							<select id="contact-method" name="contact-method">
+								<option value="">Select one</option>
+								<option value="email">Email</option>
+								<option value="phone">Phone</option>
+							</select>
+							<form-show-if conditions="contact-method=email">
+								<label for="email">Email address</label>
+								<input type="email" id="email" name="email" />
+							</form-show-if>
+						</form>
+					</div>
+				</div>
+			</section>
+		</main>
+		<footer>
+			<p>
+				Made with &#10084;&#65039; by
+				<a href="https://github.com/aarongustafson">Aaron Gustafson</a>.
+				View the source on
+				<a href="https://github.com/aarongustafson/form-show-if"
+					>GitHub</a
+				>.
+			</p>
+		</footer>
 
 		<script type="module">
 			import { FormShowIfElement } from 'https://esm.sh/@aarongustafson/form-show-if@3.1.3/form-show-if.js?bundle&target=es2022';

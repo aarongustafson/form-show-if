@@ -3,7 +3,14 @@ import config from '@open-wc/eslint-config';
 export default [
 	...config,
 	{
-		ignores: ['node_modules/**', 'package-lock.json', 'demo/**'],
+		ignores: [
+			'node_modules/**',
+			'package-lock.json',
+			'demo/**',
+			'coverage/**',
+			'playwright-report/**',
+			'test-results/**',
+		],
 	},
 	{
 		rules: {

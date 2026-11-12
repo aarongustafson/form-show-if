@@ -11,26 +11,57 @@
 					"customElement": true,
 					"name": "FormShowIfElement",
 					"tagName": "form-show-if",
-					"description": "Web component that enables you to make one HTML form field show (or not) based on the value(s) of another field.",
-					"members": [],
+					"description": "Light-DOM conditional form fields. Unmatched managed fields are disabled and their wrapper is hidden unless disabled-class supplies author-controlled visibility. No colors, status strings, or focus changes are generated.",
+					"members": [
+						{
+							"kind": "field",
+							"name": "conditions",
+							"attribute": "conditions",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"default": "null",
+							"description": "OR-separated name=value conditions. * matches a nonempty value. Null removes the attribute; no matching condition disables the managed fields."
+						},
+						{
+							"kind": "field",
+							"name": "disabledClass",
+							"attribute": "disabled-class",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"default": "null",
+							"description": "A single authored class token applied to the wrapper when unavailable, instead of setting hidden. Managed fields remain natively disabled."
+						},
+						{
+							"kind": "field",
+							"name": "enabledClass",
+							"attribute": "enabled-class",
+							"reflects": true,
+							"type": { "text": "string | null" },
+							"default": "null",
+							"description": "A single authored class token applied when available. Alone, it does not replace native hiding when unavailable."
+						}
+					],
 					"attributes": [
 						{
 							"name": "conditions",
-							"description": "A double pipe (||) separated list of `name`/`value` pairs that, if true, would make this field show",
+							"fieldName": "conditions",
+							"description": "OR-separated name=value comparisons, with * for any nonempty value. Missing names do not match. Conditions use current values, not the controller's enabled state.",
 							"type": {
 								"text": "string"
 							}
 						},
 						{
 							"name": "disabled-class",
-							"description": "An optional attribute declaring the `class` to use when the field is disabled. Used in lieu of the `hidden` attribute.",
+							"fieldName": "disabledClass",
+							"description": "A single class token used instead of hidden on the unavailable wrapper. Native disabling still excludes managed fields from submission.",
 							"type": {
 								"text": "string"
 							}
 						},
 						{
 							"name": "enabled-class",
-							"description": "An optional attribute declaring the `class` to use when the field is enabled.",
+							"fieldName": "enabledClass",
+							"description": "A single class token for the available wrapper. Does not replace hidden when disabled-class is absent.",
 							"type": {
 								"text": "string"
 							}
@@ -48,12 +79,54 @@
 					"declaration": {
 						"name": "FormShowIfElement"
 					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "index.js",
+			"exports": [
+				{
+					"kind": "js",
+					"name": "FormShowIfElement",
+					"declaration": {
+						"name": "FormShowIfElement",
+						"module": "form-show-if.js"
+					}
+				}
+			]
+		},
+		{
+			"kind": "javascript-module",
+			"path": "define.js",
+			"description": "Importing this module calls the guarded definition helper automatically.",
+			"declarations": [
+				{
+					"kind": "function",
+					"name": "defineFormShowIf",
+					"parameters": [
+						{
+							"name": "tagName",
+							"type": { "text": "string" },
+							"default": "'form-show-if'"
+						}
+					],
+					"return": { "type": { "text": "boolean" } },
+					"description": "Registers the class when a browser custom-elements registry exists. Returns false without a registry, otherwise true. Existing registrations are retained."
+				}
+			],
+			"exports": [
+				{
+					"kind": "js",
+					"name": "defineFormShowIf",
+					"declaration": { "name": "defineFormShowIf" }
 				},
 				{
 					"kind": "custom-element-definition",
 					"name": "form-show-if",
 					"declaration": {
-						"name": "FormShowIfElement"
+						"name": "FormShowIfElement",
+						"module": "form-show-if.js"
 					}
 				}
 			]

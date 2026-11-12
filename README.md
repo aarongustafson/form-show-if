@@ -2,7 +2,9 @@
 
 [![npm version](https://img.shields.io/npm/v/@aarongustafson/form-show-if.svg)](https://www.npmjs.com/package/@aarongustafson/form-show-if) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-show-if/ci.yml?branch=main)](https://github.com/aarongustafson/form-show-if/actions)
 
-Currently, HTML provides no mechanism to show & hide dependent fields. Sometimes you only want a field to show when certain other fields have a (particular) value. The `form-show-if` web component enables that.
+`form-show-if` shows or hides native form fields according to other fields’ values.
+It uses light DOM, native `hidden` and `disabled` behavior, and authored labels.
+Before enhancement, the fields remain available unless your markup or CSS hides them.
 
 ## TypeScript Support
 
@@ -46,7 +48,9 @@ Use the guarded definition helper to register the element when `customElements` 
 import '@aarongustafson/form-show-if/define.js';
 ```
 
-If you prefer to control when the element is registered, call the helper directly:
+Importing `define.js` registers the default name immediately when a browser
+registry is available, even when you import the helper by name. You can also call
+the helper again; it preserves an existing registration:
 
 ```javascript
 import { defineFormShowIf } from '@aarongustafson/form-show-if/define.js';
@@ -57,7 +61,10 @@ defineFormShowIf();
 You can also include the guarded script from HTML:
 
 ```html
-<script src="./node_modules/@aarongustafson/form-show-if/define.js" type="module"></script>
+<script
+	src="./node_modules/@aarongustafson/form-show-if/define.js"
+	type="module"
+></script>
 ```
 
 ### CDN Usage
@@ -65,38 +72,59 @@ You can also include the guarded script from HTML:
 You can also use the component directly from a CDN:
 
 ```html
-<script src="https://unpkg.com/@aarongustafson/form-show-if@latest/define.js" type="module"></script>
+<script
+	src="https://unpkg.com/@aarongustafson/form-show-if@latest/define.js"
+	type="module"
+></script>
 ```
 
 ## API
 
-<ul>
-  <li><code>conditions</code><br> A double pipe (||) separated list of <code>name</code>/<code>value</code> pairs. When fields with the provided <code>name</code> values are updated, the value of those fields will be compared against the values you provided (or * for anything). If any resolve to true, the field will be shown, otherwise it will be hidden.</li>
-  <li><code>disabled-class</code> (optional)<br> By default the field & <code>label</code> wrapper will be marked <code>hidden</code> when disabled, but you can apply a custom <code>class</code> to be used instead, when the field is disabled.</li>
-  <li><code>enabled-class</code> (optional)<br> By default the field & <code>label</code> wrapper will not be <code>hidden</code> when enabled, but you can apply a custom <code>class</code> to the wrapper, when the field is enabled.</li>
-</ul>
+| Attribute        | Property        | Default | Behavior                                                                                                                                                               |
+| ---------------- | --------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `conditions`     | `conditions`    | `null`  | OR-separated `name=value` comparisons, such as `email=*                                                                                                                |     | choose=3`. `*` matches a nonempty value. With no match, the managed fields are disabled. |
+| `disabled-class` | `disabledClass` | `null`  | A single class token applied to the unavailable wrapper **instead of** setting `hidden`. The fields remain natively disabled; visibility is your CSS’s responsibility. |
+| `enabled-class`  | `enabledClass`  | `null`  | A single class token applied to the available wrapper. Alone, this does **not** replace native hiding when unavailable.                                                |
+
+These string properties reflect their attributes. Setting a property to `null`
+removes the attribute. Native `input`, `change`, and form `reset` events trigger
+reevaluation; changing a configuration attribute also updates an initialized
+component. The component does not emit custom events.
+
+Conditions support OR, not AND. Names and values cannot contain the `||` or `=`
+delimiters; there is no escaping syntax. Comparisons use current values, not the
+referenced control’s enabled state. A disabled controller can retain a value that
+still matches. Prefer direct dependencies on an available controller instead of
+assuming that hiding one dependent field will disable its dependents too.
 
 ## Markup Assumptions
 
-This web component assumes the fields you reference in `conditions` exist in the DOM when the component is loaded. If they don't, they will be ignored.
+Put each dependent field and its label inside a `form-show-if`. The component
+manages the first eligible `input`, `select`, or `textarea`, plus same-name
+siblings inside the component. It does not disable every differently named
+descendant. Use a separate wrapper for each dependent field.
+
+The wrapper is the nearest ancestor inside the component that contains a label,
+or the component itself. Keep both the label and field inside that boundary.
+
+Referenced controls are looked up in the nearest form, or the document body when
+there is no form. Missing names do not match; a later input/change can find newly
+added controls. Successful lookups are cached. If you replace a referenced node,
+reconnect the component or change its conditions to clear that cache.
 
 ## Implementation notes
 
-The "wrapper" mentioned below refers to the nearest mutual parent of the field & its label. It may be the `form-show-if` element itself.
+Initialization waits for an animation frame so authored children are available.
+Unavailable managed fields are disabled and excluded from native FormData and
+constraint validation; their values are not cleared. When a condition matches,
+the fields are enabled and their wrapper is revealed unless `disabled-class`
+delegates visibility to your styles.
 
-1. **Field markup changes.** When the field is hidden (conditions not met), it will receive the `disabled` attribute and all fields within the wrapper are disabled.
-
-2. **Visual state management.** If `disabled-class` and/or `enabled-class` **are not** defined:
-   * When **no** condition is met: The wrapper has a `hidden` attribute
-   * When **any** condition is met: The `hidden` attribute is removed from the wrapper
-
-3. **Custom class management.** If `disabled-class` and/or `enabled-class` **are** defined:
-   * When **no** condition is met:
-     * If `enabled-class` is defined, it is removed from the wrapper
-     * If `disabled-class` is defined, it is added to the wrapper
-   * When **any** condition is met:
-     * If `enabled-class` is defined, it is added to the wrapper
-     * If `disabled-class` is defined, it is removed from the wrapper
+`enabled-class` is added only while available; `disabled-class` is added only while
+unavailable. The component does not supply either class’s styles. Disconnection
+cancels pending initialization, removes delegated listeners, and clears cached
+references. Reconnection reevaluates the existing fields; disconnection alone
+does not undo their last `hidden` or `disabled` state.
 
 ## Examples
 
@@ -104,15 +132,15 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 ```html
 <form>
-  <label for="email">Email</label>
-  <input type="email" id="email" name="email">
+	<label for="email">Email</label>
+	<input type="email" id="email" name="email" />
 
-  <form-show-if conditions="email=*">
-    <label for="phone">Phone (shown if email provided)</label>
-    <input type="tel" id="phone" name="phone">
-  </form-show-if>
+	<form-show-if conditions="email=*">
+		<label for="phone">Phone (shown if email provided)</label>
+		<input type="tel" id="phone" name="phone" />
+	</form-show-if>
 
-  <button type="submit">Submit</button>
+	<button type="submit">Submit</button>
 </form>
 ```
 
@@ -120,8 +148,8 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 ```html
 <form-show-if conditions="email=*||phone=*">
-  <label for="name">Name (shown if email OR phone provided)</label>
-  <input type="text" id="name" name="name">
+	<label for="name">Name (shown if email OR phone provided)</label>
+	<input type="text" id="name" name="name" />
 </form-show-if>
 ```
 
@@ -129,8 +157,8 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 ```html
 <form-show-if conditions="contact-method=email">
-  <label for="email">Email Address</label>
-  <input type="email" id="email" name="email">
+	<label for="email">Email Address</label>
+	<input type="email" id="email" name="email" />
 </form-show-if>
 ```
 
@@ -138,23 +166,96 @@ The "wrapper" mentioned below refers to the nearest mutual parent of the field &
 
 ```html
 <form-show-if conditions="newsletter=yes">
-  <label for="email">Email (shown for newsletter)</label>
-  <input type="email" id="email" name="email">
+	<label for="email">Email (shown for newsletter)</label>
+	<input type="email" id="email" name="email" />
 </form-show-if>
 ```
 
 ### Using Custom Classes
 
 ```html
-<form-show-if conditions="email=*" disabled-class="visually-hidden" enabled-class="is-visible">
-  <label for="phone">Phone</label>
-  <input type="tel" id="phone" name="phone">
+<form-show-if
+	conditions="email=*"
+	disabled-class="disabled"
+	enabled-class="enabled"
+>
+	<label for="phone"
+		>Phone
+		<input
+			type="tel"
+			id="phone"
+			name="phone"
+			aria-describedby="phone-state"
+		/>
+	</label>
+	<small id="phone-state">
+		<span class="state-on">Available</span>
+		<span class="state-off">Unavailable: enter an email above</span>
+	</small>
 </form-show-if>
 ```
+
+The demo styles keep reading colors paired. Solid/dashed outlines and authored
+availability text convey the state; green/red accents are supplementary:
+
+```css
+.enabled label,
+.disabled label {
+	outline: 2px solid currentColor;
+	outline-offset: 0.25rem;
+	background: Canvas;
+	color: CanvasText;
+	border-inline-start: 0.25rem solid #17652e;
+	padding: 0.75rem;
+}
+.disabled label {
+	outline-style: dashed;
+	border-inline-start-color: #982b39;
+}
+.state-off,
+.disabled .state-on {
+	display: none;
+}
+.disabled .state-off {
+	display: inline;
+}
+```
+
+Translate or replace the authored labels and status text as needed. The component
+generates no user-facing strings. Keeping descriptions outside labels preserves
+stable accessible names; `aria-describedby` associates the current explanation.
+Without enhancement, the fields remain usable and the default “Available” text
+remains truthful.
+
+## Styling and accessibility
+
+The component injects no CSS, colors, focus ring, shadow DOM, or CSS parts.
+Use normal light-DOM selectors and the optional state classes. Pair backgrounds
+and foregrounds, retain readable labels and necessary boundaries, and do not rely
+only on color or faded opacity to convey availability. The demos use Canvas
+reading pairs, ButtonFace/ButtonText controls, and Field/FieldText inputs, with
+foreground-colored necessary borders and browser-native focus. Supporting footer
+text uses an 80% CanvasText/Canvas mix with a Canvas backing and full-strength
+forced-color/increased-contrast fallback.
+
+Do not override native hiding with an unconditional `form-show-if { display:
+block; }`. Use `form-show-if:not([hidden])` if you need a block wrapper.
+
+Revealing fields does not move focus. Native keyboard navigation reaches enabled
+fields and skips disabled ones. If application code invalidates a focused field
+programmatically, move focus to a relevant visible control before hiding or
+disabling it. Custom-class availability text is not an automatic live announcement;
+provide deliberate, restrained announcements if your application needs them.
+
+Keep required instructions outside conditionally hidden wrappers. Authored fields
+remain visible and usable without JavaScript or after an import failure unless
+your own markup/CSS hides them. Do not pre-hide essential fields merely to avoid
+the initial enhancement transition.
 
 ## Browser Support
 
 This web component works in all modern browsers that support:
+
 - Custom Elements v1
 - ES Modules (for module usage)
 
@@ -176,7 +277,23 @@ npm run test:ui
 
 # Run tests with coverage
 npm run test:coverage
+
+# Install browser engines once, then run real-browser checks
+npx playwright install chromium firefox webkit
+npm run test:browser
 ```
+
+Browser tests substitute the study’s 19 distinct palettes and cover native
+conditions, form submission values, reset, keyboard focus, non-color status,
+reflow, and no-script/module-failure paths. Palette substitution does not
+reproduce an operating system’s forced-color painting. Firefox custom colors,
+real Windows Contrast themes, platform zoom, mobile hardware, and manual
+assistive-technology acceptance still need testing; automated checks do not
+establish conformance.
+
+Reflow checks cover 320–1400px viewports and enlarged root text at 320px, with
+measured field widths rather than only page-overflow assertions. Enlarging root
+text is not a substitute for testing browser zoom.
 
 ### Linting and Formatting
 

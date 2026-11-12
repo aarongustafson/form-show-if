@@ -6,22 +6,25 @@
 		<title>Show If Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
 		<style>
-			/* Demo-specific styles */
+			.enabled label,
 			.disabled label {
-				outline: 3px solid red;
-				outline-offset: 7px;
-				background: #f7d3d3;
+				outline: 2px solid currentColor;
+				outline-offset: 0.25rem;
+				background: Canvas;
+				color: CanvasText;
+				border-inline-start: 0.25rem solid #17652e;
+				padding: 0.75rem;
 			}
-			.enabled label {
-				outline: 3px solid green;
-				outline-offset: 7px;
-				background: #d3f7d3;
+			.disabled label {
+				outline-style: dashed;
+				border-inline-start-color: #982b39;
 			}
-			form-show-if:defined label.dependent {
+			.state-off,
+			.disabled .state-on {
 				display: none;
 			}
-			form-show-if:defined label.dependent:not([hidden]) {
-				display: block;
+			.disabled .state-off {
+				display: inline;
 			}
 		</style>
 	</head>
@@ -31,20 +34,19 @@
 			<p>
 				A web component that conditionally shows or hides form fields
 				based on the values of other fields. See the
-				<a
-					href="../"
-					>README</a
-				>
+				<a href="../">README</a>
 				for installation and API documentation.
-			</p>
-			<p>
-				<strong>Visual indicators:</strong> In these demos, fields with
-				custom CSS classes show green outlines/backgrounds when visible
-				and red when hidden.
 			</p>
 		</header>
 
 		<main>
+			<p class="note">
+				Use the labeled controls to reveal dependent fields. Revealing a
+				field does not move focus. Without JavaScript or if the module
+				fails to load, all authored fields remain available.
+				Custom-class examples use visible availability text and
+				solid/dashed outlines; green/red accents are supplementary.
+			</p>
 			<!-- Basic Conditional Show/Hide -->
 			<section>
 				<h2>Basic Conditional Show/Hide</h2>
@@ -389,9 +391,45 @@
 			<section>
 				<h2>Custom CSS Classes</h2>
 				<p>
-					Customize the appearance of shown and hidden fields using
-					CSS classes instead of the <code>hidden</code> attribute.
+					Use <code>enabled-class</code> to style available fields.
+					Providing <code>disabled-class</code> replaces native hiding
+					with a class; unless your CSS hides it, the unavailable
+					field stays visible but disabled and is excluded from
+					submission.
 				</p>
+				<div class="code-demo-pair">
+					<pre><code>&lt;style&gt;
+.enabled label,
+.disabled label {
+  outline: 2px solid currentColor;
+  outline-offset: 0.25rem;
+  background: Canvas;
+  color: CanvasText;
+  border-inline-start: 0.25rem solid #17652e;
+  padding: 0.75rem;
+}
+.disabled label {
+  outline-style: dashed;
+  border-inline-start-color: #982b39;
+}
+.state-off,
+.disabled .state-on {
+  display: none;
+}
+.disabled .state-off {
+  display: inline;
+}
+&lt;/style&gt;</code></pre>
+					<div class="demo">
+						<p>
+							Available fields use a solid outline. Unavailable
+							fields use a dashed outline and native disabled
+							behavior. The fields below have authored status
+							descriptions, which you can translate or replace.
+							This CSS does not generate labels or messages.
+						</p>
+					</div>
+				</div>
 
 				<div class="demo-section">
 					<h3>Enabled Class</h3>
@@ -405,8 +443,10 @@
   conditions="email=*" 
   enabled-class="enabled"&gt;</mark>
   &lt;label for="company"&gt;Company
-    &lt;input name="company" id="company" /&gt;
+    &lt;input name="company" id="company"
+      aria-describedby="company-state" /&gt;
   &lt;/label&gt;
+  &lt;small id="company-state" class="state-on"&gt;Available&lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						<div class="demo">
 							<form action="#">
@@ -420,12 +460,15 @@
 								>
 									<label for="company"
 										>Company
-										<input name="company" id="company" />
-										<small
-											>Gets a green outline when
-											shown</small
-										>
+										<input
+											name="company"
+											id="company"
+											aria-describedby="company-state"
+										/>
 									</label>
+									<small id="company-state" class="state-on"
+										>Available</small
+									>
 								</form-show-if>
 							</form>
 						</div>
@@ -436,7 +479,7 @@
 					<h3>Disabled Class</h3>
 					<p>
 						The <code>disabled-class</code> attribute adds a CSS
-						class when the field should be hidden, like
+						class when conditions do not match, like
 						<code>disabled-class="disabled"</code>.
 					</p>
 					<div class="code-demo-pair">
@@ -446,8 +489,12 @@
   &lt;label for="department"&gt;Department
     &lt;input 
       name="department" 
-      id="department" /&gt;
+      id="department" aria-describedby="department-state" /&gt;
   &lt;/label&gt;
+  &lt;small id="department-state"&gt;
+    &lt;span class="state-on"&gt;Available&lt;/span&gt;
+    &lt;span class="state-off"&gt;Unavailable: enter an email above&lt;/span&gt;
+  &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						<div class="demo">
 							<form action="#">
@@ -464,12 +511,16 @@
 										<input
 											name="department"
 											id="department"
+											aria-describedby="department-state"
 										/>
-										<small
-											>Gets a red outline when
-											hidden</small
-										>
 									</label>
+									<small id="department-state">
+										<span class="state-on">Available</span>
+										<span class="state-off"
+											>Unavailable: enter an email
+											above</span
+										>
+									</small>
 								</form-show-if>
 							</form>
 						</div>
@@ -479,8 +530,8 @@
 				<div class="demo-section">
 					<h3>Both Classes</h3>
 					<p>
-						Combine both classes for complete visual control over
-						shown and hidden states.
+						Combine both classes to style available and unavailable
+						fields without native hiding.
 					</p>
 					<div class="code-demo-pair">
 						<pre><code><mark>&lt;form-show-if 
@@ -490,8 +541,12 @@
   &lt;label for="notes"&gt;Notes
     &lt;textarea 
       name="notes" 
-      id="notes"&gt;&lt;/textarea&gt;
+      id="notes" aria-describedby="notes-state"&gt;&lt;/textarea&gt;
   &lt;/label&gt;
+  &lt;small id="notes-state"&gt;
+    &lt;span class="state-on"&gt;Available&lt;/span&gt;
+    &lt;span class="state-off"&gt;Unavailable: enter an email above&lt;/span&gt;
+  &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						<div class="demo">
 							<form action="#">
@@ -510,12 +565,16 @@
 											name="notes"
 											id="notes"
 											rows="3"
+											aria-describedby="notes-state"
 										></textarea>
-										<small
-											>Green when shown, red when
-											hidden</small
-										>
 									</label>
+									<small id="notes-state">
+										<span class="state-on">Available</span>
+										<span class="state-off"
+											>Unavailable: enter an email
+											above</span
+										>
+									</small>
 								</form-show-if>
 							</form>
 						</div>
@@ -636,29 +695,26 @@
 				<p>More advanced use cases combining multiple techniques.</p>
 
 				<div class="demo-section">
-					<h3>Chained Dependencies</h3>
-					<p>Field A shows Field B, and Field B shows Field C.</p>
+					<h3>Multiple Fields, One Controller</h3>
+					<p>
+						Keep the controlling select available and give each
+						dependent field its own condition. Conditions compare
+						values, not the controller’s disabled state; hiding one
+						field does not automatically disable its dependents.
+					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;label&gt;Enable feature
-  &lt;input 
-    type="checkbox" 
-    name="enable" 
-    value="yes" /&gt;
+						<pre><code>&lt;label for="feature-type"&gt;Feature type
+  &lt;select name="feature-type" id="feature-type"&gt;
+    &lt;option value=""&gt;Select...&lt;/option&gt;
+    &lt;option value="basic"&gt;Basic&lt;/option&gt;
+    &lt;option value="advanced"&gt;Advanced&lt;/option&gt;
+  &lt;/select&gt;
 &lt;/label&gt;
 
 <mark>&lt;form-show-if 
-  conditions="enable=yes"&gt;</mark>
-  &lt;label for="feature-type"&gt;
-    Feature type
-    &lt;select 
-      name="feature-type" 
-      id="feature-type"&gt;
-      &lt;option value=""&gt;Select...&lt;/option&gt;
-      &lt;option value="basic"&gt;Basic&lt;/option&gt;
-      &lt;option value="advanced"&gt;
-        Advanced
-      &lt;/option&gt;
-    &lt;/select&gt;
+  conditions="feature-type=*"&gt;</mark>
+  &lt;label for="feature-summary"&gt;Feature summary
+    &lt;input name="feature-summary" id="feature-summary" /&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark>
 
@@ -673,31 +729,30 @@
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						<div class="demo">
 							<form action="#">
-								<label
-									>Enable feature
-									<input
-										type="checkbox"
-										name="enable"
-										value="yes"
-									/>
+								<label for="feature-type"
+									>Feature type
+									<select
+										name="feature-type"
+										id="feature-type"
+									>
+										<option value="">Select...</option>
+										<option value="basic">Basic</option>
+										<option value="advanced">
+											Advanced
+										</option>
+									</select>
 								</label>
 
-								<form-show-if conditions="enable=yes">
-									<label for="feature-type"
-										>Feature type
-										<select
-											name="feature-type"
-											id="feature-type"
-										>
-											<option value="">Select...</option>
-											<option value="basic">Basic</option>
-											<option value="advanced">
-												Advanced
-											</option>
-										</select>
+								<form-show-if conditions="feature-type=*">
+									<label for="feature-summary"
+										>Feature summary
+										<input
+											name="feature-summary"
+											id="feature-summary"
+										/>
 										<small
-											>Shown when feature is
-											enabled</small
+											>Shown when a feature type is
+											selected</small
 										>
 									</label>
 								</form-show-if>
@@ -789,6 +844,7 @@
   &lt;button type="submit"&gt;
     Send
   &lt;/button&gt;
+  &lt;button type="reset"&gt;Reset&lt;/button&gt;
 &lt;/form&gt;</code></pre>
 						<div class="demo">
 							<form action="#">
@@ -850,6 +906,7 @@
 								</label>
 
 								<button type="submit">Send</button>
+								<button type="reset">Reset</button>
 							</form>
 						</div>
 					</div>
@@ -862,10 +919,7 @@
 				<p>
 					For complete documentation of attributes, behavior, and
 					browser support, see the
-					<a
-						href="../"
-						>README</a
-					>.
+					<a href="../">README</a>.
 				</p>
 			</section>
 		</main>
