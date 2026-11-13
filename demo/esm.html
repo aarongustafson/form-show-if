@@ -32,18 +32,18 @@
     &lt;option value="email"&gt;Email&lt;/option&gt;
     &lt;option value="phone"&gt;Phone&lt;/option&gt;
   &lt;/select&gt;
-  &lt;form-show-if conditions="contact-method=email"&gt;
+  <mark>&lt;form-show-if conditions="contact-method=email"&gt;</mark>
     &lt;label for="email"&gt;Email address&lt;/label&gt;
     &lt;input type="email" id="email" name="email" /&gt;
-  &lt;/form-show-if&gt;
+  <mark>&lt;/form-show-if&gt;</mark>
 &lt;/form&gt;
 
 &lt;script type="module"&gt;
-  import { FormShowIfElement } from
-    'https://esm.sh/@aarongustafson/form-show-if@3.1.4/form-show-if.js?bundle&amp;target=es2022';
-  if (!customElements.get('form-show-if')) {
+  <mark>import { FormShowIfElement } from
+    'https://esm.sh/@aarongustafson/form-show-if@3.1.4/form-show-if.js?bundle&amp;target=es2022';</mark>
+  <mark>if (!customElements.get('form-show-if')) {
     customElements.define('form-show-if', FormShowIfElement);
-  }
+  }</mark>
 &lt;/script&gt;</code></pre>
 					<div class="demo">
 						<form aria-label="Contact details">

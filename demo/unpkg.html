@@ -32,16 +32,16 @@
     &lt;option value="email"&gt;Email&lt;/option&gt;
     &lt;option value="phone"&gt;Phone&lt;/option&gt;
   &lt;/select&gt;
-  &lt;form-show-if conditions="contact-method=email"&gt;
+  <mark>&lt;form-show-if conditions="contact-method=email"&gt;</mark>
     &lt;label for="email"&gt;Email address&lt;/label&gt;
     &lt;input type="email" id="email" name="email" /&gt;
-  &lt;/form-show-if&gt;
+  <mark>&lt;/form-show-if&gt;</mark>
 &lt;/form&gt;
 
 &lt;script type="module"&gt;
-  import { defineFormShowIf } from
-    'https://unpkg.com/@aarongustafson/form-show-if@latest/define.js?module';
-  defineFormShowIf();
+  <mark>import { defineFormShowIf } from
+    'https://unpkg.com/@aarongustafson/form-show-if@latest/define.js?module';</mark>
+  <mark>defineFormShowIf();</mark>
 &lt;/script&gt;</code></pre>
 					<div class="demo">
 						<form aria-label="Contact details">
