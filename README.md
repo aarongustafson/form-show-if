@@ -82,14 +82,24 @@ You can also use the component directly from a CDN:
 
 | Attribute        | Property        | Default | Behavior                                                                                                                                                               |
 | ---------------- | --------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `conditions`     | `conditions`    | `null`  | OR-separated `name=value` comparisons, such as `email=*                                                                                                                |     | choose=3`. `*` matches a nonempty value. With no match, the managed fields are disabled. |
+| `conditions`     | `conditions`    | `null`  | OR-separated `name=value` comparisons, such as `email=*\|\|choose=3`. `*` matches a nonempty value. With no match, the managed fields are disabled.                    |
 | `disabled-class` | `disabledClass` | `null`  | A single class token applied to the unavailable wrapper **instead of** setting `hidden`. The fields remain natively disabled; visibility is your CSS’s responsibility. |
 | `enabled-class`  | `enabledClass`  | `null`  | A single class token applied to the available wrapper. Alone, this does **not** replace native hiding when unavailable.                                                |
 
 These string properties reflect their attributes. Setting a property to `null`
 removes the attribute. Native `input`, `change`, and form `reset` events trigger
-reevaluation; changing a configuration attribute also updates an initialized
-component. The component does not emit custom events.
+reevaluation; changing `conditions` also reevaluates an initialized component.
+The component does not emit custom events.
+
+Set `disabled-class` and `enabled-class` in markup before initialization.
+Their properties reflect later attribute changes, but those changes do not
+fully migrate existing DOM state: adding `disabled-class` does not clear an
+existing `hidden` attribute, and changing or removing a class token does not
+remove previously applied tokens. A field can stay hidden or retain stale
+state styling after its conditions match. Reconnection alone does not clear
+those stale attributes or classes. Prefer configuring the class tokens before
+upgrade; if you change them later, explicitly reconcile the old classes and
+visibility while preserving entered values and focus.
 
 Conditions support OR, not AND. Names and values cannot contain the `||` or `=`
 delimiters; there is no escaping syntax. Comparisons use current values, not the
@@ -200,6 +210,7 @@ availability text convey the state; green/red accents are supplementary:
 
 ```css
 .enabled label,
+[disabled-class='disabled'] label,
 .disabled label {
 	outline: 2px solid currentColor;
 	outline-offset: 0.25rem;

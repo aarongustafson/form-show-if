@@ -11,7 +11,7 @@
 					"customElement": true,
 					"name": "FormShowIfElement",
 					"tagName": "form-show-if",
-					"description": "Light-DOM conditional form fields. Unmatched managed fields are disabled and their wrapper is hidden unless disabled-class supplies author-controlled visibility. No colors, status strings, or focus changes are generated.",
+					"description": "Light-DOM conditional form fields. Unmatched managed fields are disabled and their wrapper is hidden unless disabled-class supplies author-controlled visibility. No colors, status strings, or focus changes are generated. Configure state-class tokens before initialization; later changes do not clear stale classes or hidden state.",
 					"members": [
 						{
 							"kind": "field",

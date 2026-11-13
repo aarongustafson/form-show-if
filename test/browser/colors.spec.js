@@ -296,6 +296,41 @@ test('copyable and README state styles match the live styles', async ({
 		expect(css.replace(/\s+/g, '')).toBe(live.replace(/\s+/g, ''));
 });
 
+for (const example of ['live', 'copyable', 'README']) {
+	test(`${example}: disabled-class-only fields retain a solid available outline`, async ({
+		page,
+	}) => {
+		await demo(page);
+		if (example !== 'live') {
+			const css =
+				example === 'README'
+					? readme.match(/```css\n([\s\S]*?)```/)[1]
+					: (
+							await page
+								.locator('pre code')
+								.filter({ hasText: '.disabled label' })
+								.textContent()
+						).match(/<style>([\s\S]*?)<\/style>/)[1];
+			await page.locator('head > style').evaluate((style, css) => {
+				style.textContent = css;
+			}, css);
+		}
+		const host = page.locator('form-show-if[conditions="email5=*"]');
+		await expect(host.locator('label')).toHaveCSS(
+			'outline-style',
+			'dashed',
+		);
+		await page.locator('[name="email5"]').fill('reader@example.com');
+		await expect(host.locator('input')).toBeEnabled();
+		await expect(host).not.toHaveClass(/enabled/);
+		await expect(host.locator('.state-on')).toBeVisible();
+		await expect(host.locator('label')).toHaveCSS('outline-style', 'solid');
+		expect(
+			(await measurements(host.locator('label'))).text,
+		).toBeGreaterThanOrEqual(4.5);
+	});
+}
+
 test('dependent fields use a visible controller rather than stale disabled values', async ({
 	page,
 }) => {

@@ -1,8 +1,31 @@
 import { readFile } from 'node:fs/promises';
 import { expect, it } from 'vitest';
+import { parsers } from 'prettier/plugins/markdown';
 import { FormShowIfElement } from '../form-show-if.js';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
+
+it('keeps the complete OR example and explanation in a four-column API table', async () => {
+	const ast = await parsers.markdown.parse(await read('../README.md'), {});
+	const table = ast.children.find((node) => node.type === 'table');
+	expect(table).toBeDefined();
+	expect(table.children).toHaveLength(4);
+	for (const row of table.children) expect(row.children).toHaveLength(4);
+	const behavior = table.children[1].children[3];
+	expect(behavior.children).toContainEqual(
+		expect.objectContaining({
+			type: 'inlineCode',
+			value: 'email=*||choose=3',
+		}),
+	);
+	expect(
+		behavior.children.some(
+			(node) =>
+				node.type === 'text' &&
+				node.value.includes('managed fields are disabled'),
+		),
+	).toBe(true);
+});
 
 it('describes the real reflected attributes and properties', async () => {
 	const manifest = JSON.parse(await read('../custom-elements.json'));
