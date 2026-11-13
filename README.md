@@ -1,6 +1,10 @@
 # Show If Web Component
 
-[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-show-if.svg)](https://www.npmjs.com/package/@aarongustafson/form-show-if) [![Build Status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-show-if/ci.yml?branch=main)](https://github.com/aarongustafson/form-show-if/actions)
+[![npm version](https://img.shields.io/npm/v/@aarongustafson/form-show-if.svg)](https://www.npmjs.com/package/@aarongustafson/form-show-if)
+[![CI status](https://img.shields.io/github/actions/workflow/status/aarongustafson/form-show-if/ci.yml?branch=main&label=CI)](https://github.com/aarongustafson/form-show-if/actions/workflows/ci.yml)
+[![Minified + gzipped size](https://img.shields.io/bundlejs/size/@aarongustafson/form-show-if?format=minzip&label=min%2Bgzip)](https://bundlejs.com/?q=@aarongustafson/form-show-if)
+[![License](https://img.shields.io/npm/l/@aarongustafson/form-show-if)](https://github.com/aarongustafson/form-show-if/blob/main/LICENSE)
+[![Type definitions](https://img.shields.io/npm/types/@aarongustafson/form-show-if)](https://github.com/aarongustafson/form-show-if/blob/main/form-show-if.d.ts)
 
 `form-show-if` shows or hides native form fields according to other fields’ values.
 It uses light DOM, native `hidden` and `disabled` behavior, and authored labels.
