@@ -12,7 +12,9 @@ const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 const source = await read('form-show-if.js');
 const definition = await read('define.js');
-const css = await read('demo/styles.css');
+const css = (
+	await Promise.all(['demo/styles.css', 'demo/demo-shell.css'].map(read))
+).join('\n');
 const html = await read('demo/index.html');
 const readme = await read('README.md');
 const tokens = [
@@ -161,6 +163,10 @@ test('all 19 palettes preserve reading, fields, disabled-state labels and contro
 				style.textContent = replacement;
 			},
 			substitute(css, palette),
+		);
+		await expect(page.locator('.code-demo-pair').first()).toHaveCSS(
+			'display',
+			'grid',
 		);
 		await page.locator('head > style:not(#palette-css)').evaluate(
 			(style, replacement) => {
