@@ -4,17 +4,42 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>form-show-if via esm.sh</title>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/themes/github.css"
+		/>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
-			<h1>&lt;form-show-if&gt; via esm.sh</h1>
-			<p>
+			<p class="eyebrow">Web component / esm</p>
+			<h1>&lt;form-show-if&gt;</h1>
+			<p class="lede">
 				Import the class, then register it. See the
 				<a href="../">README</a> for the API.
 			</p>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/form-show-if/blob/main/README.md"
+					>Read the README</a
+				>
+				<a href="https://github.com/aarongustafson/form-show-if"
+					>View on GitHub</a
+				>
+				<a href="./index.html">All examples</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<p class="note">
 				Select Email to reveal the dependent field. Focus stays on the
 				select. Without JavaScript or if the CDN import fails, the
@@ -25,7 +50,16 @@
 			<section class="demo-section">
 				<h2>Manual registration</h2>
 				<div class="code-demo-pair">
-					<pre><code>&lt;form&gt;
+					<micro-lighter
+						class="code-panel"
+						language="html"
+						controls="copy"
+						data-label="HTML"
+					>
+						<pre
+							aria-label="Manual registration code 1"
+							tabindex="0"
+						><code>&lt;form&gt;
   &lt;label for="contact-method"&gt;Preferred contact method&lt;/label&gt;
   &lt;select id="contact-method" name="contact-method"&gt;
     &lt;option value=""&gt;Select one&lt;/option&gt;
@@ -45,6 +79,7 @@
     customElements.define('form-show-if', FormShowIfElement);
   }</mark>
 &lt;/script&gt;</code></pre>
+					</micro-lighter>
 					<div class="demo">
 						<form aria-label="Contact details">
 							<label for="contact-method"
@@ -82,5 +117,6 @@
 				customElements.define('form-show-if', FormShowIfElement);
 			}
 		</script>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>

@@ -1,6 +1,13 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+	await page.route(
+		'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
+		(route) => route.abort(),
+	);
+});
+
 const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 const source = await read('form-show-if.js');
@@ -142,10 +149,11 @@ test('all 19 palettes preserve reading, fields, disabled-state labels and contro
 	test.setTimeout(60_000);
 	await demo(page);
 	const custom = html.match(/<style>([\s\S]*?)<\/style>/)[1];
-	await page.locator('link[rel="stylesheet"]').evaluate((link) => {
+	await page.locator('link[rel="stylesheet"]').evaluateAll((links) => {
 		const style = document.createElement('style');
 		style.id = 'palette-css';
-		link.replaceWith(style);
+		links[0].replaceWith(style);
+		for (const link of links.slice(1)) link.remove();
 	});
 	for (const [index, palette] of palettes.entries()) {
 		await page.locator('#palette-css').evaluate(
@@ -356,24 +364,28 @@ test('native keyboard focus stays on the controller and reaches only available f
 }) => {
 	await demo(page);
 	const controller = page.locator('[name="email"]');
+	const tab =
+		browserName === 'webkit' && process.platform === 'darwin'
+			? 'Alt+Tab'
+			: 'Tab';
 	await controller.focus();
 	await page.keyboard.type('reader@example.com');
 	await expect(controller).toBeFocused();
 	await expect(page.locator('#phone')).toBeVisible();
-	await page.keyboard.press(
-		browserName === 'webkit' && process.platform === 'darwin'
-			? 'Alt+Tab'
-			: 'Tab',
-	);
+	await page.keyboard.press(tab);
 	await expect(page.locator('#phone')).toBeFocused();
-	await expect(page.locator('#phone')).toHaveCSS('outline-style', 'auto');
+	await expect(page.locator('#phone')).toHaveCSS('outline-style', 'solid');
+	await expect(page.locator('#phone')).toHaveCSS('outline-width', '3px');
 	await controller.fill('');
 	await expect(page.locator('#phone')).toBeHidden();
-	await page.keyboard.press(
-		browserName === 'webkit' && process.platform === 'darwin'
-			? 'Alt+Tab'
-			: 'Tab',
-	);
+	await page.keyboard.press(tab);
+	await expect(
+		page
+			.locator('.code-demo-pair')
+			.filter({ has: page.locator('[name="email2"]') })
+			.locator('pre'),
+	).toBeFocused();
+	await page.keyboard.press(tab);
 	await expect(page.locator('[name="email2"]')).toBeFocused();
 });
 
@@ -443,7 +455,8 @@ test('forced colors retain automatic adjustment, state text and native focus', a
 	await page.keyboard.type('reader@example.com');
 	await page.keyboard.press('Tab');
 	await expect(host.locator('textarea')).toBeFocused();
-	await expect(host.locator('textarea')).toHaveCSS('outline-style', 'auto');
+	await expect(host.locator('textarea')).toHaveCSS('outline-style', 'solid');
+	await expect(host.locator('textarea')).toHaveCSS('outline-width', '3px');
 	await expect(host.locator('.state-on')).toBeVisible();
 });
 
