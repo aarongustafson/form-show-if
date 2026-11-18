@@ -541,6 +541,10 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 				javaScriptEnabled: failure !== 'no JavaScript',
 				viewport: { width: 320, height: 900 },
 			});
+			await context.route(
+				'https://cdn.jsdelivr.net/npm/microlighter@2.2.0/dist/**',
+				(route) => route.abort(),
+			);
 			try {
 				const page = await context.newPage();
 				await page.route(/(\.js(\?|$)|esm\.sh|unpkg\.com)/, (route) =>
