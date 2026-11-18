@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Show If Web Component Demo</title>
 		<link rel="stylesheet" href="./styles.css" />
+		<link rel="stylesheet" href="./demo-shell.css" />
 		<style>
 			.enabled label,
 			[disabled-class='disabled'] label,
@@ -29,18 +30,38 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body data-syntax-theme="github">
+		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
-			<h1>Show If Web Component Demo</h1>
-			<p>
+			<p class="eyebrow">Web component / Examples</p>
+			<h1>&lt;form-show-if&gt;</h1>
+			<p class="lede">
 				A web component that conditionally shows or hides form fields
 				based on the values of other fields. See the
 				<a href="../">README</a>
 				for installation and API documentation.
 			</p>
+			<nav aria-label="Component resources">
+				<a
+					href="https://github.com/aarongustafson/form-show-if/blob/main/README.md"
+					>Read the README</a
+				>
+				<a href="https://github.com/aarongustafson/form-show-if"
+					>View on GitHub</a
+				>
+				<a href="./esm.html">esm.sh example</a>
+				<a href="./unpkg.html">unpkg example</a>
+			</nav>
 		</header>
 
-		<main>
+		<main id="main" tabindex="-1">
+			<p
+				id="microlighter-status"
+				class="enhancement-status"
+				role="status"
+				hidden
+			></p>
+
 			<p class="note">
 				Use the labeled controls to reveal dependent fields. Revealing a
 				field does not move focus. Without JavaScript or if the module
@@ -63,7 +84,16 @@
 						when the email field contains any value.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;label&gt;Email address
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Show Field if Another Field Has Any Value code 1"
+								tabindex="0"
+							><code>&lt;label&gt;Email address
   &lt;input type="email" name="email" /&gt;
 &lt;/label&gt;
 
@@ -76,6 +106,7 @@
       type="tel" /&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -120,7 +151,16 @@
 						select has "Option 3" chosen.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;label&gt;Email address
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Multiple Conditions (OR) code 2"
+								tabindex="0"
+							><code>&lt;label&gt;Email address
   &lt;input type="email" name="email" /&gt;
 &lt;/label&gt;
 
@@ -139,6 +179,7 @@
     &lt;input name="details" id="details" /&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -187,7 +228,16 @@
 						value.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;label&gt;Email address
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Exact Value Match code 3"
+								tabindex="0"
+							><code>&lt;label&gt;Email address
   &lt;input type="email" name="email" /&gt;
 &lt;/label&gt;
 
@@ -197,6 +247,7 @@
     &lt;input name="secret" id="secret" /&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -235,7 +286,16 @@
 						them to specify.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;fieldset&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label='Radio "Other" Pattern code 4'
+								tabindex="0"
+							><code>&lt;fieldset&gt;
   &lt;legend&gt;Choose an option&lt;/legend&gt;
   &lt;label&gt;
     &lt;input type="radio" 
@@ -262,6 +322,7 @@
     <mark>&lt;/form-show-if&gt;</mark>
   &lt;/div&gt;
 &lt;/fieldset&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<fieldset>
@@ -313,7 +374,16 @@
 						<code>checkbox[]=other</code> syntax.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;fieldset&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label='Checkbox "Other" Pattern code 5'
+								tabindex="0"
+							><code>&lt;fieldset&gt;
   &lt;legend&gt;Choose options&lt;/legend&gt;
   &lt;label&gt;
     &lt;input type="checkbox" 
@@ -341,6 +411,7 @@
     <mark>&lt;/form-show-if&gt;</mark>
   &lt;/div&gt;
 &lt;/fieldset&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<fieldset>
@@ -399,7 +470,16 @@
 					submission.
 				</p>
 				<div class="code-demo-pair">
-					<pre><code>&lt;style&gt;
+					<micro-lighter
+						class="code-panel"
+						language="html"
+						controls="copy"
+						data-label="HTML"
+					>
+						<pre
+							aria-label="Custom CSS Classes code 6"
+							tabindex="0"
+						><code>&lt;style&gt;
 .enabled label,
 [disabled-class='disabled'] label,
 .disabled label {
@@ -422,6 +502,7 @@
   display: inline;
 }
 &lt;/style&gt;</code></pre>
+					</micro-lighter>
 					<div class="demo">
 						<p>
 							Available fields use a solid outline. Unavailable
@@ -441,7 +522,16 @@
 						<code>enabled-class="enabled"</code>.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Enabled Class code 7"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*" 
   enabled-class="enabled"&gt;</mark>
   &lt;label for="company"&gt;Company
@@ -450,6 +540,7 @@
   &lt;/label&gt;
   &lt;small id="company-state" class="state-on"&gt;Available&lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -485,7 +576,16 @@
 						<code>disabled-class="disabled"</code>.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Disabled Class code 8"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*"
   disabled-class="disabled"&gt;</mark>
   &lt;label for="department"&gt;Department
@@ -498,6 +598,7 @@
     &lt;span class="state-off"&gt;Unavailable: enter an email above&lt;/span&gt;
   &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -536,7 +637,16 @@
 						fields without native hiding.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Both Classes code 9"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*"
   enabled-class="enabled"
   disabled-class="disabled"&gt;</mark>
@@ -550,6 +660,7 @@
     &lt;span class="state-off"&gt;Unavailable: enter an email above&lt;/span&gt;
   &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -600,7 +711,16 @@
 						<code>label</code>.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Sibling Label &amp; Input code 10"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*"&gt;</mark>
   &lt;label for="field1"&gt;
     Field label
@@ -610,6 +730,7 @@
     id="field1" 
     name="field1" /&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -636,7 +757,16 @@
 						elements.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Label with Nested Elements code 11"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*"&gt;</mark>
   &lt;label for="field2"&gt;
     &lt;span&gt;Multi-part&lt;/span&gt;
@@ -644,6 +774,7 @@
   &lt;/label&gt;
   &lt;input id="field2" name="field2" /&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -666,13 +797,23 @@
 					<h3>Label Wrapping Input</h3>
 					<p>Label can wrap the <code>input</code> element.</p>
 					<div class="code-demo-pair">
-						<pre><code><mark>&lt;form-show-if 
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Label Wrapping Input code 12"
+								tabindex="0"
+							><code><mark>&lt;form-show-if 
   conditions="email=*"&gt;</mark>
   &lt;label&gt;
     &lt;span&gt;Wrapped input&lt;/span&gt;
     &lt;input name="field3" /&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -705,7 +846,16 @@
 						field does not automatically disable its dependents.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;label for="feature-type"&gt;Feature type
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Multiple Fields, One Controller code 13"
+								tabindex="0"
+							><code>&lt;label for="feature-type"&gt;Feature type
   &lt;select name="feature-type" id="feature-type"&gt;
     &lt;option value=""&gt;Select...&lt;/option&gt;
     &lt;option value="basic"&gt;Basic&lt;/option&gt;
@@ -729,6 +879,7 @@
       id="config"&gt;&lt;/textarea&gt;
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label for="feature-type"
@@ -793,7 +944,16 @@
 						shows contact detail fields.
 					</p>
 					<div class="code-demo-pair">
-						<pre><code>&lt;form action="#"&gt;
+						<micro-lighter
+							class="code-panel"
+							language="html"
+							controls="copy"
+							data-label="HTML"
+						>
+							<pre
+								aria-label="Contact Form with Conditional Fields code 14"
+								tabindex="0"
+							><code>&lt;form action="#"&gt;
   &lt;label&gt;Name
     &lt;input type="text" 
       name="name" required /&gt;
@@ -848,6 +1008,7 @@
   &lt;/button&gt;
   &lt;button type="reset"&gt;Reset&lt;/button&gt;
 &lt;/form&gt;</code></pre>
+						</micro-lighter>
 						<div class="demo">
 							<form action="#">
 								<label
@@ -938,5 +1099,6 @@
 		</footer>
 
 		<script src="../define.js" type="module"></script>
+		<script type="module" src="./code-examples.js"></script>
 	</body>
 </html>
