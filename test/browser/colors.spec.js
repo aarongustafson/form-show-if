@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { test, expect } from '@playwright/test';
+import { expectNativeFocus, readDemoStyles } from './demo-fixture.js';
 
 test.beforeEach(async ({ page }) => {
 	await page.route(
@@ -12,10 +13,10 @@ const read = (path) =>
 	readFile(new URL(`../../${path}`, import.meta.url), 'utf8');
 const source = await read('form-show-if.js');
 const definition = await read('define.js');
-const css = (
-	await Promise.all(['demo/styles.css', 'demo/demo-shell.css'].map(read))
-).join('\n');
-const html = await read('demo/index.html');
+const css = await readDemoStyles();
+const stateStyles = (await read('demo/styles.css'))
+	.match(/:where\(\.demo\)[\s\S]*?(?=\n@media)/)[0]
+	.replaceAll(':where(.demo) ', '');
 const readme = await read('README.md');
 const tokens = [
 	'Canvas',
@@ -150,7 +151,6 @@ test('all 19 palettes preserve reading, fields, disabled-state labels and contro
 }) => {
 	test.setTimeout(60_000);
 	await demo(page);
-	const custom = html.match(/<style>([\s\S]*?)<\/style>/)[1];
 	await page.locator('link[rel="stylesheet"]').evaluateAll((links) => {
 		const style = document.createElement('style');
 		style.id = 'palette-css';
@@ -167,12 +167,6 @@ test('all 19 palettes preserve reading, fields, disabled-state labels and contro
 		await expect(page.locator('.code-demo-pair').first()).toHaveCSS(
 			'display',
 			'grid',
-		);
-		await page.locator('head > style:not(#palette-css)').evaluate(
-			(style, replacement) => {
-				style.textContent = replacement;
-			},
-			substitute(custom, palette),
 		);
 		for (const selector of [
 			'main > section > h2',
@@ -298,7 +292,7 @@ test('copyable and README state styles match the live styles', async ({
 	page,
 }) => {
 	await demo(page);
-	const live = html.match(/<style>([\s\S]*?)<\/style>/)[1];
+	const live = stateStyles;
 	const copyable = (
 		await page
 			.locator('pre code')
@@ -325,9 +319,17 @@ for (const example of ['live', 'copyable', 'README']) {
 								.filter({ hasText: '.disabled label' })
 								.textContent()
 						).match(/<style>([\s\S]*?)<\/style>/)[1];
-			await page.locator('head > style').evaluate((style, css) => {
-				style.textContent = css;
-			}, css);
+			await page
+				.locator('link[href="./styles.css"]')
+				.evaluate(async (link, replacement) => {
+					const styles = await (await fetch(link.href)).text();
+					const style = document.createElement('style');
+					style.textContent = styles.replace(
+						/:where\(\.demo\)[\s\S]*?(?=\n@media)/,
+						replacement,
+					);
+					link.replaceWith(style);
+				}, css);
 		}
 		const host = page.locator('form-show-if[conditions="email5=*"]');
 		await expect(host.locator('label')).toHaveCSS(
@@ -380,8 +382,7 @@ test('native keyboard focus stays on the controller and reaches only available f
 	await expect(page.locator('#phone')).toBeVisible();
 	await page.keyboard.press(tab);
 	await expect(page.locator('#phone')).toBeFocused();
-	await expect(page.locator('#phone')).toHaveCSS('outline-style', 'solid');
-	await expect(page.locator('#phone')).toHaveCSS('outline-width', '3px');
+	await expectNativeFocus(page.locator('#phone'));
 	await controller.fill('');
 	await expect(page.locator('#phone')).toBeHidden();
 	await page.keyboard.press(tab);
@@ -461,8 +462,7 @@ test('forced colors retain automatic adjustment, state text and native focus', a
 	await page.keyboard.type('reader@example.com');
 	await page.keyboard.press('Tab');
 	await expect(host.locator('textarea')).toBeFocused();
-	await expect(host.locator('textarea')).toHaveCSS('outline-style', 'solid');
-	await expect(host.locator('textarea')).toHaveCSS('outline-width', '3px');
+	await expectNativeFocus(host.locator('textarea'));
 	await expect(host.locator('.state-on')).toBeVisible();
 });
 
@@ -508,10 +508,35 @@ for (const name of ['index.html', 'esm.html', 'unpkg.html']) {
 			);
 			expect(overflow, `${name} at ${width}px`).toBe(false);
 			const pair = page.locator('.code-demo-pair').first();
-			await expect(pair).toHaveCSS(
-				'flex-direction',
-				width < 768 ? 'column' : 'row',
-			);
+			await expect(pair).toHaveCSS('display', 'grid');
+			// Read both rectangles together: Firefox may scroll the focused field
+			// into view between separate protocol calls after a viewport resize.
+			const measurePair = () =>
+				pair.evaluate((element) => ({
+					codeBox: element
+						.querySelector(':scope > .code-panel')
+						.getBoundingClientRect()
+						.toJSON(),
+					liveBox: element
+						.querySelector(':scope > .demo')
+						.getBoundingClientRect()
+						.toJSON(),
+				}));
+			await expect
+				.poll(async () => {
+					const { codeBox, liveBox } = await measurePair();
+					return width < 768
+						? liveBox.y - (codeBox.y + codeBox.height)
+						: liveBox.x - (codeBox.x + codeBox.width);
+				})
+				.toBeGreaterThanOrEqual(0);
+			if (width < 768)
+				await expect
+					.poll(async () => {
+						const { codeBox, liveBox } = await measurePair();
+						return Math.abs(liveBox.x - codeBox.x);
+					})
+					.toBeLessThanOrEqual(1);
 			const field = await pair
 				.locator('.demo input[type="email"]')
 				.first()
