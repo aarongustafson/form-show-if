@@ -4,33 +4,10 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Show If Web Component Demo</title>
-		<link rel="stylesheet" href="./styles.css" />
 		<link rel="stylesheet" href="./demo-shell.css" />
-		<style>
-			.enabled label,
-			[disabled-class='disabled'] label,
-			.disabled label {
-				outline: 2px solid currentColor;
-				outline-offset: 0.25rem;
-				background: Canvas;
-				color: CanvasText;
-				border-inline-start: 0.25rem solid #17652e;
-				padding: 0.75rem;
-			}
-			.disabled label {
-				outline-style: dashed;
-				border-inline-start-color: #982b39;
-			}
-			.state-off,
-			.disabled .state-on {
-				display: none;
-			}
-			.disabled .state-off {
-				display: inline;
-			}
-		</style>
+		<link rel="stylesheet" href="./styles.css" />
 	</head>
-	<body data-syntax-theme="github">
+	<body data-demo-page="full" data-syntax-theme="github">
 		<a class="skip-link" href="#main">Skip to examples</a>
 		<header>
 			<p class="eyebrow">Web component / Examples</p>
@@ -59,6 +36,9 @@
 				id="microlighter-status"
 				class="enhancement-status"
 				role="status"
+				data-loading-message="Loading optional code highlighting and Copy controls."
+				data-failure-message="MicroLighter could not load. Code remains readable and selectable; the component loads independently."
+				data-theme-failure-message="Code highlighting and Copy controls are available, but the syntax theme could not load. The component loads independently."
 				hidden
 			></p>
 
@@ -107,7 +87,7 @@
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -180,7 +160,7 @@
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -248,7 +228,7 @@
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -323,7 +303,7 @@
   &lt;/div&gt;
 &lt;/fieldset&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<fieldset>
 									<legend>Choose an option</legend>
@@ -412,7 +392,7 @@
   &lt;/div&gt;
 &lt;/fieldset&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<fieldset>
 									<legend>Choose options</legend>
@@ -503,7 +483,7 @@
 }
 &lt;/style&gt;</code></pre>
 					</micro-lighter>
-					<div class="demo">
+					<div class="demo" data-demo-label="Live example">
 						<p>
 							Available fields use a solid outline. Unavailable
 							fields use a dashed outline and native disabled
@@ -541,7 +521,7 @@
   &lt;small id="company-state" class="state-on"&gt;Available&lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -599,7 +579,7 @@
   &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -661,7 +641,7 @@
   &lt;/small&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -731,7 +711,7 @@
     name="field1" /&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -775,7 +755,7 @@
   &lt;input id="field2" name="field2" /&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -814,7 +794,7 @@
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Email address
@@ -880,7 +860,7 @@
   &lt;/label&gt;
 <mark>&lt;/form-show-if&gt;</mark></code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label for="feature-type"
 									>Feature type
@@ -1009,7 +989,7 @@
   &lt;button type="reset"&gt;Reset&lt;/button&gt;
 &lt;/form&gt;</code></pre>
 						</micro-lighter>
-						<div class="demo">
+						<div class="demo" data-demo-label="Live example">
 							<form action="#">
 								<label
 									>Name

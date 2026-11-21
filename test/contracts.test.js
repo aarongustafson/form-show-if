@@ -5,6 +5,13 @@ import { FormShowIfElement } from '../form-show-if.js';
 
 const read = (path) => readFile(new URL(path, import.meta.url), 'utf8');
 
+it('trims block-edge margins inside demo sections', async () => {
+	const styles = await read('../demo/demo-shell.css');
+	expect(styles).toMatch(
+		/\.demo-section(?:,\s*\.api-reference)?\s*\{[^}]*\bmargin-trim:\s*block;/,
+	);
+});
+
 it('keeps the complete OR example and explanation in a four-column API table', async () => {
 	const ast = await parsers.markdown.parse(await read('../README.md'), {});
 	const table = ast.children.find((node) => node.type === 'table');
